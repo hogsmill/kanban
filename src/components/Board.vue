@@ -100,7 +100,7 @@ export default {
     },
     saveWip(column) {
       const wip = document.getElementById('wip-' + column).value
-      if (!wip.match(/^[0-9]+&/)) {
+      if (!wip.match(/^[0-9]+$/)) {
         alert('Please enter a number for WIP')
       } else {
         this.socket.emit('setColumnWip', {gameName: this.gameName, teamName: this.teamName, column: column, wipLimit: wip})
