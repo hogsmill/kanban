@@ -115,8 +115,20 @@ function doDb(fun, data) {
       case 'updateGameInclude':
         dbStore.updateGameInclude(err, client, db, io, data, debugOn)
         break
+      case 'updateWipLimits':
+        dbStore.updateWipLimits(err, client, db, io, data, debugOn)
+        break
       case 'updateStealth':
         dbStore.updateStealth(err, client, db, io, data, debugOn)
+        break
+      case 'updateIncludeColumn':
+        dbStore.updateIncludeColumn(err, client, db, io, data, debugOn)
+        break
+      case 'moveColumnUp':
+        dbStore.moveColumnUp(err, client, db, io, data, debugOn)
+        break
+      case 'moveColumnDown':
+        dbStore.moveColumnDown(err, client, db, io, data, debugOn)
         break
 
      // Game State
@@ -206,7 +218,15 @@ io.on('connection', (socket) => {
 
   socket.on('updateStealth', (data) => { doDb('updateStealth', data) })
 
+  socket.on('updateWipLimits', (data) => { doDb('updateWipLimits', data) })
+
+  socket.on('updateIncludeColumn', (data) => { doDb('updateIncludeColumn', data) })
+
   socket.on('updateGameInclude', (data) => { doDb('updateGameInclude', data) })
+
+  socket.on('moveColumnUp', (data) => { doDb('moveColumnUp', data) })
+
+  socket.on('moveColumnDown', (data) => { doDb('moveColumnDown', data) })
 
   socket.on('getGames', (data) => { doDb('getGames', data) })
 

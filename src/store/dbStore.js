@@ -20,11 +20,11 @@ const initialTeams = [
 ]
 
 const initialColumns = [
-  {name: 'design', order: 1, wipLimit: 0, cards: []},
-  {name: 'develop', order: 2, wipLimit: 0, cards: []},
-  {name: 'test', order: 3, wipLimit: 0, cards: []},
-  {name: 'deploy', order: 4, wipLimit: 0, cards: []},
-  {name: 'done', order: 5, wipLimit: 0, cards: []}
+  {name: 'design', order: 1, include: true, wipLimit: 0, cards: []},
+  {name: 'develop', order: 2, include: true, wipLimit: 0, cards: []},
+  {name: 'test', order: 3, include: true, wipLimit: 0, cards: []},
+  {name: 'deploy', order: 4, include: true, wipLimit: 0, cards: []},
+  {name: 'done', order: 5, include: true, wipLimit: 0, cards: []}
 ]
 
 const initialCards = [
@@ -629,15 +629,138 @@ module.exports = {
 
     if (debugOn) { console.log('updateStealth', data) }
 
+    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+      if (err) throw err
+      if (res) {
+        const id = res._id
+        delete res._id
+        res.stealth = data.stealth
+        db.collection('kanbanGames').updateOne({'_id': id}, {$set: res}, function(err) {
+          if (err) throw err
+          io.emit('loadGame', res)
+        })
+      }
+    })
+  },
+
+  updateWipLimits: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('updateWipLimits', data) }
+
+    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+      if (err) throw err
+      if (res) {
+        const id = res._id
+        delete res._id
+        res.wipLimits = data.wipLimits
+        db.collection('kanbanGames').updateOne({'_id': id}, {$set: res}, function(err) {
+          if (err) throw err
+          io.emit('loadGame', res)
+        })
+      }
+    })
+  },
+
+  updateIncludeColumn: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('updateIncludeColumn', data) }
+
     db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
+          const columns = []
+          for (let i = 0; i < res[r].columns.length; i++) {
+            const column = res[r].columns[i]
+            if (column.name == data.column.name) {
+              column.include = data.include
+            }
+            columns.push(column)
+          }
+          res[r].columns = columns
           const id = res[r]._id
           delete res[r]._id
           db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
-            io.emit('loadGame', res[r])
+            io.emit('loadTeam', res[r])
+          })
+        }
+      }
+    })
+  },
+
+  moveColumnUp: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('moveColumnUp', data) }
+
+    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+      if (err) throw err
+      if (res.length) {
+        for (let r = 0; r < res.length; r++) {
+          const col = res[r].columns.find(function(c) {
+            return c.name == data.column.name
+          })
+          const colNumber = col.order
+          const otherColNumber = col.order - 1
+          const otherCol = res[r].columns.find(function(c) {
+            return c.order == otherColNumber
+          })
+          const columns = []
+          for (let i = 0; i < res[r].columns.length; i++) {
+            const column = res[r].columns[i]
+            if (column.name == col.name) {
+              column.order = otherColNumber
+            }
+            if (column.name == otherCol.name) {
+              column.order = colNumber
+            }
+            columns.push(column)
+          }
+          res[r].columns = columns
+          const id = res[r]._id
+          delete res[r]._id
+          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+            if (err) throw err
+            io.emit('loadTeam', res[r])
+          })
+        }
+      }
+    })
+  },
+
+  moveColumnDown: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('moveColumnDown', data) }
+
+    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+      if (err) throw err
+      if (res.length) {
+        for (let r = 0; r < res.length; r++) {
+          const col = res[r].columns.find(function(c) {
+            return c.name == data.column.name
+          })
+          const colNumber = col.order
+          const otherColNumber = col.order + 1
+          const otherCol = res[r].columns.find(function(c) {
+            return c.order == otherColNumber
+          })
+          const columns = []
+          for (let i = 0; i < res[r].columns.length; i++) {
+            const column = res[r].columns[i]
+            if (column.name == col.name) {
+              column.order = otherColNumber
+            }
+            if (column.name == otherCol.name) {
+              column.order = colNumber
+            }
+            columns.push(column)
+          }
+          res[r].columns = columns
+          const id = res[r]._id
+          delete res[r]._id
+          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+            if (err) throw err
+            io.emit('loadTeam', res[r])
           })
         }
       }

@@ -39,11 +39,11 @@ export const store = new Vuex.Store({
       'Deployer'
     ],
     columns: [
-      {name: 'design', order: 1, wipLimit: 0, cards: []},
-      {name: 'develop', order: 2, wipLimit: 0, cards: []},
-      {name: 'test', order: 3, wipLimit: 0, cards: []},
-      {name: 'deploy', order: 4, wipLimit: 0, cards: []},
-      {name: 'done', order: 5, wipLimit: 0, cards: []}
+      {name: 'design', order: 1, include: true, wipLimit: 0, cards: []},
+      {name: 'develop', order: 2, include: true, wipLimit: 0, cards: []},
+      {name: 'test', order: 3, include: true, wipLimit: 0, cards: []},
+      {name: 'deploy', order: 4, include: true, wipLimit: 0, cards: []},
+      {name: 'done', order: 5, include: true, wipLimit: 0, cards: []}
     ],
     wipLimits: true,
     currentDay: 1,
@@ -125,6 +125,9 @@ export const store = new Vuex.Store({
     },
     getStealth: (state) => {
       return state.stealth
+    },
+    getWipLimits: (state) => {
+      return state.wipLimits
     },
     getCurrency: (state) => {
       return state.currency
@@ -228,7 +231,18 @@ export const store = new Vuex.Store({
       return roles
     },
     getColumns: (state) => {
-      return state.columns
+      return state.columns.sort(function(a, b) {
+        return a.order - b.order
+      })
+    },
+    getIncludedColumns: (state) => {
+      const columns = []
+      for (let i = 0; i < state.columns.length; i++) {
+        if (state.columns[i].include) {
+          columns.push(state.columns[i])
+        }
+      }
+      return columns
     },
     getBacklog: (state) => {
       state.backlog = []
@@ -314,7 +328,6 @@ export const store = new Vuex.Store({
       state.teams = payload.teams
       state.stealth = payload.stealth
       state.wipLimits = payload.wipLimits
-      console.log(state)
     },
     updateGameName: (state, payload) => {
       state.gameName = payload

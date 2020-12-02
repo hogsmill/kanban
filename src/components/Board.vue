@@ -85,7 +85,7 @@ export default {
       return this.$store.getters.getCapabilities
     },
     columns() {
-      return this.$store.getters.getColumns
+      return this.$store.getters.getIncludedColumns
     },
     backlog() {
       return this.$store.getters.getBacklog
