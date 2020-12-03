@@ -130,6 +130,12 @@ function doDb(fun, data) {
       case 'moveColumnDown':
         dbStore.moveColumnDown(err, client, db, io, data, debugOn)
         break
+      case 'addColumn':
+        dbStore.addColumn(err, client, db, io, data, debugOn)
+        break
+      case 'deleteColumn':
+        dbStore.deleteColumn(err, client, db, io, data, debugOn)
+        break
 
      // Game State
      //
@@ -227,6 +233,10 @@ io.on('connection', (socket) => {
   socket.on('moveColumnUp', (data) => { doDb('moveColumnUp', data) })
 
   socket.on('moveColumnDown', (data) => { doDb('moveColumnDown', data) })
+
+  socket.on('addColumn', (data) => { doDb('addColumn', data) })
+
+  socket.on('deleteColumn', (data) => { doDb('deleteColumn', data) })
 
   socket.on('getGames', (data) => { doDb('getGames', data) })
 

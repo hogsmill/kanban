@@ -29,42 +29,49 @@
       </td>
       <td colspan="3" class="columns">
         <table class="columns-table">
-          <tr>
-            <td>
-              Include?
-            </td>
-            <td>
-              Name
-            </td>
-            <td colspan="2">
-              Move
-            </td>
-          </tr>
-          <tr v-for="(column, index) in columns" :key="index">
-            <td>
-              <input :id="'include-column-' + column.name" type="checkbox" :checked="column.include" @click="toggleIncludeColumn(column)">
-            </td>
-            <td>
-              {{ column.name }}
-            </td>
-            <td>
-              <i v-if="index > 0" class="fas fa-chevron-up" @click="moveColumnUp(column)" />
-            </td>
-            <td>
-              <i v-if="index < columns.length - 1" class="fas fa-chevron-down" @click="moveColumnDown(column)" />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Add New
-            </td>
-            <td>
-              <input type="text" id="add-column-up">
-            </td>
-            <td colspan="2">
-              <i class="fas fa-save" @click="addColumn()" />
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th>
+                Include?
+              </th>
+              <th>
+                Name
+              </th>
+              <th colspan="3">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(column, index) in columns" :key="index">
+              <td>
+                <input :id="'include-column-' + column.name" type="checkbox" :checked="column.include" @click="toggleIncludeColumn(column)">
+              </td>
+              <td>
+                {{ column.name }}
+              </td>
+              <td>
+                <i class="fas fa-trash-alt" title="Delete column" @click="deleteColumn(column)" />
+              </td>
+              <td>
+                <i v-if="index > 0" class="fas fa-chevron-up" title="Move Column Left in Workflow" @click="moveColumnUp(column)" />
+              </td>
+              <td>
+                <i v-if="index < columns.length - 1" class="fas fa-chevron-down" title="Move Column Right in Workflow" @click="moveColumnDown(column)" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Add New
+              </td>
+              <td>
+                <input type="text" id="add-column">
+              </td>
+              <td colspan="3">
+                <i class="fas fa-save" @click="addColumn()" />
+              </td>
+            </tr>
+          </tbody>
         </table>
       </td>
     </tr>
@@ -137,6 +144,13 @@ export default {
     moveColumnDown(column) {
       this.socket.emit('moveColumnDown', {gameName: this.gameName, column: column})
     },
+    deleteColumn(column) {
+      this.socket.emit('deleteColumn', {gameName: this.gameName, column: column})
+    },
+    addColumn() {
+      const column = document.getElementById('add-column').value
+      this.socket.emit('addColumn', {gameName: this.gameName, column: column})
+    },
     toggleTeamActive(team) {
       const include = document.getElementById('team-active-' + team).checked
       this.socket.emit('updateTeamActive', {gameName: this.gameName, teamName: team, include: include})
@@ -156,10 +170,13 @@ export default {
   }
   .columns-table {
     border: none;
+    th {
+      text-align: center;
+    }
     td {
       border: none;
     }
-    .fa-save, .fa-chevron-up, .fa-chevron-down {
+    .fa-trash-alt, .fa-save, .fa-chevron-up, .fa-chevron-down {
       margin: 0 auto;
       position: initial;
       font-size: x-large;

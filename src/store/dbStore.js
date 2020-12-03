@@ -1,6 +1,7 @@
 
 const teamFuns = require('./lib/teams.js')
 const cardFuns = require('./lib/cards.js')
+const columnFuns = require('./lib/columns.js')
 const pairingFuns = require('./lib/pairing.js')
 const dependent = require('./lib/dependent.js')
 const gameState = require('./lib/gameState.js')
@@ -669,15 +670,7 @@ module.exports = {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
-          const columns = []
-          for (let i = 0; i < res[r].columns.length; i++) {
-            const column = res[r].columns[i]
-            if (column.name == data.column.name) {
-              column.include = data.include
-            }
-            columns.push(column)
-          }
-          res[r].columns = columns
+          res[r].columns = columnFuns.includeColumn(res[r].columns, data.colum.name, data.include)
           const id = res[r]._id
           delete res[r]._id
           db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
@@ -756,6 +749,46 @@ module.exports = {
             columns.push(column)
           }
           res[r].columns = columns
+          const id = res[r]._id
+          delete res[r]._id
+          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+            if (err) throw err
+            io.emit('loadTeam', res[r])
+          })
+        }
+      }
+    })
+  },
+
+  addColumn: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('addColumn', data) }
+
+    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+      if (err) throw err
+      if (res.length) {
+        for (let r = 0; r < res.length; r++) {
+          res[r].columns = columnFuns.addColumn(res[r].columns, data.column)
+          const id = res[r]._id
+          delete res[r]._id
+          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+            if (err) throw err
+            io.emit('loadTeam', res[r])
+          })
+        }
+      }
+    })
+  },
+
+  deleteColumn: function(err, client, db, io, data, debugOn) {
+
+    if (debugOn) { console.log('deleteColumn', data) }
+
+    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+      if (err) throw err
+      if (res.length) {
+        for (let r = 0; r < res.length; r++) {
+          res[r].columns = columnFuns.deleteColumn(res[r].columns, data.column.name)
           const id = res[r]._id
           delete res[r]._id
           db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
