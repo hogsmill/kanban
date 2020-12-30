@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    thisGame: 'No Estimates',
+    thisGame: 'Kanban Explorer',
     connections: 0,
     walkThrough: false,
     showFacilitator: false,
@@ -38,6 +38,7 @@ export const store = new Vuex.Store({
       'Tester',
       'Deployer'
     ],
+    colours: [],
     columns: [
       {name: 'design', order: 1, include: true, wipLimit: 0, cards: []},
       {name: 'develop', order: 2, include: true, wipLimit: 0, cards: []},
@@ -45,7 +46,9 @@ export const store = new Vuex.Store({
       {name: 'deploy', order: 4, include: true, wipLimit: 0, cards: []},
       {name: 'done', order: 5, include: true, wipLimit: 0, cards: []}
     ],
-    wipLimits: true,
+    splitColumns: false,
+    wipLimits: false,
+    wipLimitType: 'soft',
     currentDay: 1,
     eventCards: [
       {number: 1, text: 'Good Luck!<br/><br/>. Have you submitted an initial estimate for the project?<br/><br/>If not, click \'Report\' or \'Set Estimates\' and create your estimate now.'},
@@ -69,33 +72,6 @@ export const store = new Vuex.Store({
       {number: 19, text: 'How much work in progress do you have? Has that changed from earlier?'},
       {number: 20, text: 'When you have completed the MVP (cards 1 to [MVPCARDS]), look at your estimates from earlier. How did you do? This time, try creating a probabilistic forecast for the rest of the backlog using the delivery-time data (ask the facilitator for help).'}
     ],
-    workCards: [
-      {number: 1, design: 6, develop: 7, test: 8, deploy: 2, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 2, design: 0, develop: 8, test: 6, deploy: 4, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 3, design: 10, develop: 9, test: 9, deploy: 3, urgent: true, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 4, design: 4, develop: 9, test: 12, deploy: 3, urgent: false, teamDependency: 4, dependencyDone: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 5, design: 4, develop: 10, test: 5, deploy: 2, urgent: false, teamDependency: 4, dependencyDone: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 6, design: 1, develop: 8, test: 2, deploy: 5, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 7, design: 1, develop: 10, test: 3, deploy: 1, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 8, design: 0, develop: 4, test: 3, deploy: 5, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 9, design: 10, develop: 4, test: 10, deploy: 6, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 10, design: 1, develop: 7, test: 10, deploy: 8, urgent: true, teamDependency: 4, dependencyDone: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 11, design: 8, develop: 10, test: 10, deploy: 1, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 12, design: 3, develop: 8, test: 11, deploy: 3, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 13, design: 0, develop: 6, test: 9, deploy: 4, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 14, design: 1, develop: 6, test: 3, deploy: 1, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 15, design: 10, develop: 1, test: 5, deploy: 2, urgent: true, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 16, design: 2, develop: 5, test: 1, deploy: 5, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 17, design: 3, develop: 6, test: 8, deploy: 4, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 18, design: 0, develop: 7, test: 12, deploy: 3, urgent: false, teamDependency: 4, dependencyDone: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 19, design: 5, develop: 9, test: 4, deploy: 7, urgent: true, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 20, design: 8, develop: 8, test: 3, deploy: 7, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 21, design: 1, develop: 6, test: 5, deploy: 1, urgent: false, teamDependency: 4, dependencyDone: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 22, design: 0, develop: 10, test: 7, deploy: 7, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 23, design: 5, develop: 10, test: 11, deploy: 8, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 24, design: 0, develop: 6, test: 4, deploy: 6, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}},
-      {number: 25, design: 3, develop: 2, test: 2, deploy: 4, urgent: false, teamDependency: 0, dependentOn: '', commit: 0, blocked: false, effort: {design: 0, develop: 0, test: 0, deploy: 0}, workedOn: {}}
-    ],
     otherCards: [],
     currentWorkCard: 0,
     recharting: false,
@@ -108,7 +84,99 @@ export const store = new Vuex.Store({
     projectActual: 0,
     reEstimate: 0,
     gameState: [],
-    games: []
+    games: [],
+    statistics: {
+      correlation: 0,
+      cycleTime: {
+        data: {
+          labels: [],
+          datasets: [{
+            backgroundColor: '',
+            pointBackgroundColor: 'white',
+            borderWidth: 1,
+            pointBorderColor: '#249EBF',
+            data: []
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {beginAtZero: true},
+              gridLines: {display: true}
+            }],
+            xAxes: [{
+              gridLines: {display: false}
+            }]
+          },
+          legend: {display: false},
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      },
+      distribution: {
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'No. of Cards that took this many days',
+            backgroundColor: '#f87979',
+            pointBackgroundColor: 'white',
+            borderWidth: 1,
+            pointBorderColor: '#249EBF',
+            data: []
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {beginAtZero: true},
+              gridLines: {display: true}
+            }],
+            xAxes: [{
+              gridLines: {display: false}
+            }]
+          },
+          legend: {display: true},
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      },
+      scatterPlot: {
+        data: {
+          labels: [],
+          datasets: [{
+            pointRadius: 8,
+            pointHoverRadius: 12,
+            backgroundColor: '#f87979',
+            pointBackgroundColor: '#f87979',
+            borderWidth: 1,
+            pointBorderColor: '#249EBF',
+            data: []
+          }]
+        },
+        limits: {
+          75: 0,
+          90: 0,
+          95: 0,
+          99: 0
+        },
+        options: {
+          scales: {
+            xAxes: [{type: 'linear', position: 'bottom', ticks: {beginAtZero: true}}],
+            yAxes: [{ticks: {beginAtZero: true}}]
+          },
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItem, data) {
+                return data.datasets[0].data[tooltipItem.index].label
+              }
+            }
+          },
+          legend: {display: false},
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      }
+    }
   },
   getters: {
     thisGame: (state) => {
@@ -128,6 +196,15 @@ export const store = new Vuex.Store({
     },
     getWipLimits: (state) => {
       return state.wipLimits
+    },
+    getWipLimitType: (state) => {
+      return state.wipLimitType
+    },
+    getSplitColumns: (state) => {
+      return state.splitColumns
+    },
+    getColours: (state) => {
+      return state.colours
     },
     getCurrency: (state) => {
       return state.currency
@@ -257,11 +334,7 @@ export const store = new Vuex.Store({
       })
     },
     getCurrentWorkCard: (state) => {
-      if (state.currentWorkCard < state.workCards.length) {
-        return state.currentWorkCard
-      } else {
-        return false
-      }
+      return state.currentWorkCard
     },
     getWorkCards: (state) => {
       return state.workCards
@@ -292,6 +365,18 @@ export const store = new Vuex.Store({
     },
     getConnections: (state) => {
       return state.connections
+    },
+    getCorrelation: (state) => {
+      return state.statistics.correlation
+    },
+    getCycleTime: (state) => {
+      return state.statistics.cycleTime
+    },
+    getDistribution: (state) => {
+      return state.statistics.distribution
+    },
+    getScatterPlot: (state) => {
+      return state.statistics.scatterPlot
     }
   },
   mutations: {
@@ -328,6 +413,9 @@ export const store = new Vuex.Store({
       state.teams = payload.teams
       state.stealth = payload.stealth
       state.wipLimits = payload.wipLimits
+      state.wipLimitType = payload.wipLimitType
+      state.splitColumns = payload.splitColumns
+      state.colours = payload.colours
     },
     updateGameName: (state, payload) => {
       state.gameName = payload
@@ -362,6 +450,9 @@ export const store = new Vuex.Store({
     },
     updateConnections: (state, payload) => {
       state.connections = payload
+    },
+    updateStatistic: (state, payload) => {
+      state.statistics[payload.statistic] = payload.data
     }
   },
   actions: {
@@ -409,6 +500,9 @@ export const store = new Vuex.Store({
     },
     updateConnections: ({ commit }, payload) => {
       commit('updateConnections', payload)
+    },
+    updateStatistic: ({ commit }, payload) => {
+      commit('updateStatistic', payload)
     }
   }
 })

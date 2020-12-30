@@ -1,9 +1,9 @@
 <template>
-  <div class="work-card" :class="{'blocked': workCard.blocked}">
+  <div class="work-card" :class="{'complete': complete, 'blocked': workCard.blocked}">
     <div v-if="workCard.blocked" class="blocked-text">
       <strong>BLOCKED</strong>
     </div>
-    <div v-if="workCard.failed && column == 'deploy'" class="failed">
+    <div v-if="workCard.failed && column.name == 'deploy'" class="failed">
       FAILED
     </div>
     <div v-if="workCard.urgent" class="urgent">
@@ -11,6 +11,12 @@
     </div>
     <div v-if="workCard.teamDependency && workCard.dependencyDone < workCard.teamDependency" class="outstanding-dependency">
       DEPENDENCY
+    </div>
+    <div v-if="complete" class="move-card">
+      <button class="btn btn-sm btn-site-primary" :disabled="canMoveCard().error" @click="moveCard()"
+              :title="canMoveCard().message ? canMoveCard().message : 'Move card to ' + nextColumn()">
+        <i class="fas fa-long-arrow-alt-right" />
+      </button>
     </div>
     <div class="work-card-header">
       <div class="card-number">
@@ -20,30 +26,14 @@
         Effort: {{ totalEffort() }}
       </div>
     </div>
-    <div v-if="column != 'done'">
-      <div class="work-card-effort" :class="{ 'current' : canAssign('design') }" @click="addEffort('design')">
-        <div class="work-card-column column rounded-circle" :class="{'design': !workCard.blocked}">
-          A
+    <div v-if="column.name != 'done'">
+      <div v-for="(col, index) in columns" :key="index">
+        <div v-if="col.name != 'done'" class="work-card-effort" :class="{ 'current' : canAssign(col.name) }" @click="addEffort(col.name)">
+          <div class="work-card-column column rounded-circle" :style="{ 'background-color': col.colour }">
+            {{ col.name.split('')[0].toUpperCase() }}
+          </div>
+          <div v-for="n in workCard[col.name]" :key="n" :class="{'assigned' : n <= workCard.effort[col.name]}" class="work-card-column rounded-circle" />
         </div>
-        <div v-for="n in workCard.design" :key="n" :class="{'assigned' : n <= workCard.effort.design}" class="work-card-column rounded-circle" />
-      </div>
-      <div class="work-card-effort" :class="{ 'current' : canAssign('develop') }" @click="addEffort('develop')">
-        <div class="work-card-column column rounded-circle" :class="{'develop': !workCard.blocked}">
-          B
-        </div>
-        <div v-for="n in workCard.develop" :key="n" :class="{'assigned' : n <= workCard.effort.develop}" class="work-card-column rounded-circle" />
-      </div>
-      <div class="work-card-effort" :class="{ 'current' : canAssign('test') }" @click="addEffort('test')">
-        <div class="work-card-column column rounded-circle" :class="{'test': !workCard.blocked}">
-          C
-        </div>
-        <div v-for="n in workCard.test" :key="n" :class="{'assigned' : n <= workCard.effort.test}" class="work-card-column rounded-circle" />
-      </div>
-      <div class="work-card-effort" :class="{ 'current' : canAssign('deploy') }" @click="addEffort('deploy')">
-        <div class="work-card-column column rounded-circle" :class="{'deploy': !workCard.blocked}">
-          D
-        </div>
-        <div v-for="n in workCard.deploy" :key="n" :class="{'assigned' : n <= workCard.effort.deploy}" class="work-card-column rounded-circle" />
       </div>
     </div>
     <table class="delivery">
@@ -70,19 +60,25 @@
         </td>
       </tr>
     </table>
+
   </div>
 </template>
 
 <script>
 import roles from '../../lib/roles.js'
+import columnFuns from '../../lib/columns.js'
 
 export default {
   props: [
-    'column', 'workCard', 'socket'
+    'column',
+    'workCard',
+    'socket',
+    'complete'
   ],
   data() {
     return {
       timeout: false,
+      message: ''
     }
   },
   computed: {
@@ -107,16 +103,40 @@ export default {
     capabilities() {
       return this.$store.getters.getCapabilities
     },
+    columns() {
+      return this.$store.getters.getColumns
+    },
     currentDay() {
       return this.$store.getters.getCurrentDay
+    },
+    wipLimits() {
+      return this.$store.getters.getWipLimits
+    },
+    wipLimitType() {
+      return this.$store.getters.getWipLimitType
     }
+  },
+  created() {
+    const self = this
+    this.socket.on('moveCardToNextColumnError', (data) => {
+      if (this.gameName == data.gameName && this.teamName == data.teamName && this.workCard.number == data.workCard.number) {
+        self.error = data.error
+        self.show()
+      }
+    })
+    this.socket.on('cardNotCompleteError', (data) => {
+      if (this.gameName == data.gameName && this.teamName == data.teamName) {
+        self.message = 'not complete error'
+        self.show()
+      }
+    })
   },
   methods: {
     teamClass() {
       return this.workCard.dependentOn ? this.workCard.dependentOn.name.toLowerCase() : ''
     },
     effort(column) {
-      return this.workCard[column]
+      return this.workCard[column.name]
     },
     totalEffort() {
       return this.workCard.design +
@@ -128,7 +148,7 @@ export default {
       return this.currentDay - this.workCard.commit
     },
     canAssign(column) {
-      return this.column == column
+      return this.column.name == column
     },
     addEffort(column) {
       let message = '', effort = 0
@@ -179,6 +199,15 @@ export default {
           column: column,
           effort: effort})
       }
+    },
+    nextColumn() {
+      return columnFuns.nextColumnName(this.column, this.columns)
+    },
+    canMoveCard() {
+      return columnFuns.canMoveCardToNextColumn(this.workCard, this.column, this.columns, this.wipLimits, this.wipLimitType)
+    },
+    moveCard() {
+      this.socket.emit('moveCardToNextColumn', {gameName: this.gameName, teamName: this.teamName, workCard: this.workCard, column: this.column})
     }
   }
 }
@@ -239,6 +268,17 @@ export default {
       background-color: #888;
     }
 
+    .move-card {
+      text-align: right;
+      line-height: 1;
+      background-color: #ccc;
+      padding-bottom: 6px;
+
+      button {
+        padding: 0 8px;
+        margin-top: 4px;
+      }
+    }
     .work-card-header {
       text-align: right;
       padding-right: 2px;

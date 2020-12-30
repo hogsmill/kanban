@@ -14,24 +14,19 @@
         </button>
       </div>
       <div class="mt-4" v-if="step == 1">
-        <h4>Welcome to the No Estimates Game</h4>
+        <h4>Welcome to the Kanban Playground</h4>
         <div>
+          <div class="under-construction">
+            <i class="fas fa-tools" />
+          </div>
           <p>
-            The No Estimates game allows you to explore sources of variation in
-            estimation, and why they will always make your estimation efforts inaccurate
-            and, therefor wasteful. Ultimately, it will present a more scientific
-            approach to the perennial question - when will my stuff be delivered?
+            This activity is under construction, but feel free to have a play and give us
+            feedback to help the future direction. It is very much based on the
+            <a href="../no-estimates?walkThrough">No Estimates</a> game, so if you are
+            familiar with that, this should make some sense.
           </p>
           <p>
-            This activity is best facilitated by someone familiar with the game,
-            so do get in touch and we can either facilitate a workshop for you,
-            or teach you how to do it yourself. More details on facilitation can be found at
-            <a href="https://noestimates.wordpress.com/facilitator-guide" target="blank">
-              https://noestimates.wordpress.com/facilitator-guide
-            </a>
-          </p>
-          <p>
-            If you'd like more info, or would like to discuss facilitation, send us your email
+            If you'd like to be kept up to date with progress, or have any feedback, send us your email
             in the box below, and we can discuss your needs.
           </p>
           <div>
@@ -40,6 +35,40 @@
               Submit
             </button>
           </div>
+        </div>
+      </div>
+      <div class="mt-4" v-if="step == 2">
+        <h4>Welcome to the Kanban Playground</h4>
+        <div>
+          <p>
+            To see what the game can do, just add <b>?host</b> to the end of the
+            URL, i.e. <a href="http://agilesimulations.co.uk/kanban/?host">http://agilesimulations.co.uk/kanban/?host</a>
+            and go to the facilitator tab. There, you can set all kinds of things like:
+          </p>
+          <ul>
+            <li>Number and order of columns</li>
+            <li>Whether to use WIP limits and whether they are 'hard'</li>
+            <li>Whether to have split columns</li>
+            <li>Number of teams (<em>to simulate dependencies...</em>)</li>
+          </ul>
+          <p>
+            ...etc., etc.
+          </p>
+          <p>
+            Please give us feedback on what features you'd like to see - the idea is
+            to provide everything you might need so you can explore the effect of
+            different set ups and policies on the efficiency of your Kanban boards.
+          </p>
+        </div>
+      </div>
+      <div class="mt-4" v-if="step == 3">
+        <h4>Welcome to the Kanban Playground</h4>
+        <div>
+          <p>
+            To get started, just click on the card stack in <b>Backlog</b>, and
+            start playing. Click the <b>Statistics</b> button when you've completed
+            some cards to see analyses of how you're doing.
+          </p>
         </div>
       </div>
       <div class="buttons" v-if="step < noOfScreens()">
@@ -68,7 +97,10 @@ export default {
     return {
       step: 1,
       default: { width: 650, height: 260 },
-      positions: {}
+      positions: {
+        1: {},
+        2: {}
+      }
     }
   },
   computed: {
@@ -173,8 +205,31 @@ export default {
     }
 
     p {
-      margin-left: 8px;
-      margin-right: 8px;
+      margin-left: 12px;
+      margin-right: 12px;
+      text-align: left;
+    }
+
+    .under-construction {
+      width: 80px;
+      height: 80px;
+      border-radius: 40px;
+      border: 6px solid;
+      margin: 12px auto;
+      background-color: yellow;
+
+      .fas {
+        font-size: xxx-large;
+        margin-top: 9px;
+      }
+    }
+
+    ul {
+      margin: 12px;
+
+      li {
+        text-align: left;
+      }
     }
  }
 

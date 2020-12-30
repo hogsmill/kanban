@@ -15,7 +15,6 @@
         WARNING: You are not connected to the server
       </div>
       <SetGame :socket="socket" />
-      <SetEstimates v-if="gameName" :socket="socket" />
       <Status :socket="socket" />
       <div class="container board">
         <h3 class="board-title">
@@ -24,7 +23,7 @@
           <span v-if="teamName">Team: {{ teamName }} ({{ myTeamMembers }} {{ membersString() }})</span>
         </h3>
         <div class="game-buttons">
-          <Report :socket="socket" />
+          <Statistics :socket="socket" />
         </div>
         <Roles />
         <Message :socket="socket" />
@@ -42,9 +41,8 @@ import params from './lib/params.js'
 import stringFuns from './lib/stringFuns.js'
 
 import Header from './components/Header.vue'
-import Report from './components/report/Report.vue'
+import Statistics from './components/Statistics.vue'
 import SetGame from './components/SetGame.vue'
-import SetEstimates from './components/SetEstimates.vue'
 import Status from './components/Status.vue'
 import Message from './components/Message.vue'
 import FacilitatorView from './components/FacilitatorView.vue'
@@ -61,10 +59,9 @@ export default {
     FacilitatorView,
     WalkThroughView,
     SetGame,
-    SetEstimates,
     Status,
     Message,
-    Report,
+    Statistics,
     Roles,
     Day,
     Board

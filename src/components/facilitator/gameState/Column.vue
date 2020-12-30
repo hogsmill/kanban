@@ -1,5 +1,5 @@
 <template>
-  <td class="game-state-column">
+  <td v-if="show" class="game-state-column">
     <div>{{ name }}</div>
     <div class="cards-header">
       <div class="count">
@@ -34,7 +34,9 @@
 <script>
 export default {
   props: [
-    'column', 'name'
+    'column',
+    'name',
+    'show'
   ],
   data() {
     return {

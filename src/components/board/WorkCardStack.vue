@@ -1,10 +1,7 @@
 <template>
-  <div class="work-card-back" :class="{'complete': currentWorkCard === false}" @click="pullInCard()">
-    <div v-if="currentWorkCard !== false" class="stack-number rounded-circle">
+  <div class="work-card-back" @click="pullInCard()">
+    <div class="stack-number rounded-circle">
       {{ currentWorkCard + 1 }}
-    </div>
-    <div v-if="currentWorkCard === false" class="stack-number rounded-circle complete">
-      0
     </div>
   </div>
 </template>
@@ -30,9 +27,7 @@ export default {
   },
   methods: {
     pullInCard() {
-      if (this.currentWorkCard !== false) {
-        this.socket.emit('pullInCard', {gameName: this.gameName, teamName: this.teamName, teams: this.teams})
-      }
+      this.socket.emit('pullInCard', {gameName: this.gameName, teamName: this.teamName, teams: this.teams})
     }
   }
 }
@@ -41,6 +36,7 @@ export default {
 <style lang="scss">
 
   .work-card-back {
+    width: 124px;
     margin: 6px;
     height: 86px;
     background-image: url("../../assets/img/work-card-back.png");
@@ -53,9 +49,6 @@ export default {
       cursor: pointer;
     }
 
-    &.complete {
-      opacity: 0.5;
-    }
     .stack-number {
       width: 20px;
       position: relative;

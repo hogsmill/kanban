@@ -38,31 +38,79 @@ function getCardFirstColumn(card, columns) {
   return column
 }
 
+function getColumnEffort() {
+  return parseInt(Math.random() * 8)
+}
+
+function getTeamDependency() {
+  return Math.random() < 0.2 ? 4 : 0
+}
+
+function getUrgent() {
+  return Math.random() < 0.25
+}
+
+function generateCard(columns, n) {
+  const card = {
+    number: n,
+    urgent: getUrgent(),
+    teamDependency: getTeamDependency(),
+    dependentOn: '',
+    commit: 0,
+    blocked: false,
+    effort: {},
+    workedOn: {}
+  }
+  if (card.dependentOn) {
+    card.dependencyDone = 0
+  }
+  for (let i = 0; i < columns.length; i++) {
+    card[columns[i].name] = getColumnEffort()
+    card.effort[columns[i].name] = 0
+  }
+  if (teams.length < 2) {
+    card.teamDependency = 0
+  }
+  if (card.teamDependency) {
+    card.dependentOn = selectDependentTeam(teams, teamName)
+  }
+  card.commit = currentDay
+  return card
+}
+
 module.exports = {
 
-  pullInCard: function(columns, workCards, currentWorkCard, currentDay, teams, teamName) {
-    const newColumns = []
-    const card = workCards.find(function(c) {
-      return c.number == currentWorkCard
-    })
+  totalEffort: function(card) {
+    return card.design +
+      card.develop +
+      card.test +
+      card.deploy
+  },
+
+  generateCard: function(columns, n, currentDay, teamName, teams) {
+    const card = {
+      number: n,
+      urgent: getUrgent(),
+      teamDependency: getTeamDependency(),
+      dependentOn: '',
+      commit: 0,
+      blocked: false,
+      effort: {},
+      workedOn: {}
+    }
+    for (let i = 0; i < columns.length; i++) {
+      card[columns[i].name] = getColumnEffort()
+      card.effort[columns[i].name] = 0
+    }
     if (teams.length < 2) {
       card.teamDependency = 0
     }
-    const cardColumn = getCardFirstColumn(card, columns)
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i]
-      if (column.name == cardColumn) {
-        const cards = column.cards
-        card.commit = currentDay
-        if (card.teamDependency) {
-          card.dependentOn = selectDependentTeam(teams, teamName)
-        }
-        cards.push(card)
-        column.cards = cards
-      }
-      newColumns.push(column)
+    if (card.teamDependency) {
+      card.dependentOn = selectDependentTeam(teams, teamName)
+      card.dependencyDone = 0
     }
-    return newColumns
+    card.commit = currentDay
+    return card
   },
 
   addWorkedOn: function(card, column, name, role) {
@@ -79,7 +127,7 @@ module.exports = {
     return card
   },
 
-  cardCompleteInColumn: function(card, colName, team, autoDeploy) {
+  cardCompleteInColumn: function(card, colName) {
     let dependentDone = true
     if (colName == 'deploy') {
       dependentDone = card.teamDependency == 0 || card.teamDependency == card.dependencyDone
@@ -88,7 +136,7 @@ module.exports = {
     return !card.blocked && !card.failed && card.effort[colName] >= card[colName] && dependentDone
   },
 
-  moveCard: function(columns, workCards, card, n, currentDay) {
+  moveCard: function(columns, card, n, currentDay) {
     const fromCol = columns[n]
     const toCol = columns[n + 1]
     let i
@@ -103,7 +151,7 @@ module.exports = {
       card.done = true
       card.delivery = currentDay
       card.time = card.delivery - card.commit
-      cardValue(workCards, card)
+      //cardValue(workCards, card)
     }
     toCol.cards.push(card)
   },

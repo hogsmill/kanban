@@ -19,8 +19,20 @@
       <td class="left-col">
         WIP Limits?
       </td>
+      <td class="wip-limits">
+        <input id="wip-limits" type="checkbox" :checked="wipLimits" @click="toggleWipLimits()">
+      </td>
+      <td colspan="2" class="wip-limits">
+        <input name="wip-limits-type" id="wip-limits-hard" type="radio" :checked="wipLimitType == 'hard'" @click="toggleWipLimitType('hard')"> Hard<br>
+        <input name="wip-limits-type" id="wip-limits-soft" type="radio" :checked="wipLimitType == 'soft'" @click="toggleWipLimitType('soft')"> Soft
+      </td>
+    </tr>
+    <tr v-if="showGameParams">
+      <td class="left-col">
+        Split Columns?
+      </td>
       <td colspan="3" class="wip-limits">
-        <input id="wipLimits" type="checkbox" :checked="wipLimits" @click="toggleWipLimits()">
+        <input id="split-columns" type="checkbox" :checked="splitColumns" @click="toggleSplitColumns()">
       </td>
     </tr>
     <tr v-if="showGameParams">
@@ -47,17 +59,20 @@
               <td>
                 <input :id="'include-column-' + column.name" type="checkbox" :checked="column.include" @click="toggleIncludeColumn(column)">
               </td>
-              <td>
+              <td class="column-name" :style="{ 'background-color': column.colour }">
                 {{ column.name }}
+              </td>
+              <td>
+                <ColumnColours :column="column" :id="'column-color-' + column.name" />
               </td>
               <td>
                 <i class="fas fa-trash-alt" title="Delete column" @click="deleteColumn(column)" />
               </td>
               <td>
-                <i v-if="index > 0" class="fas fa-chevron-up" title="Move Column Left in Workflow" @click="moveColumnUp(column)" />
+                <i v-if="index > 0 && index < columns.length - 1" class="fas fa-chevron-up" title="Move Column Left in Workflow" @click="moveColumnUp(column)" />
               </td>
               <td>
-                <i v-if="index < columns.length - 1" class="fas fa-chevron-down" title="Move Column Right in Workflow" @click="moveColumnDown(column)" />
+                <i v-if="index < columns.length - 2" class="fas fa-chevron-down" title="Move Column Right in Workflow" @click="moveColumnDown(column)" />
               </td>
             </tr>
             <tr>
@@ -66,6 +81,9 @@
               </td>
               <td>
                 <input type="text" id="add-column">
+              </td>
+              <td>
+                <ColumnColours :column=null :id="'add-column-colour'" />
               </td>
               <td colspan="3">
                 <i class="fas fa-save" @click="addColumn()" />
@@ -89,7 +107,12 @@
 </template>
 
 <script>
+import ColumnColours from './gameParams/ColumnColours.vue'
+
 export default {
+  components: {
+    ColumnColours
+  },
   props: [
     'socket'
   ],
@@ -108,6 +131,12 @@ export default {
     wipLimits() {
       return this.$store.getters.getWipLimits
     },
+    wipLimitType() {
+      return this.$store.getters.getWipLimitType
+    },
+    splitColumns() {
+      return this.$store.getters.getSplitColumns
+    },
     gameName() {
       return this.$store.getters.getGameName
     },
@@ -125,9 +154,16 @@ export default {
     setShowGameParams(val) {
       this.showGameParams = val
     },
+    toggleSplitColumns() {
+      const splitColumns = document.getElementById('split-columns').checked
+      this.socket.emit('updateSplitColumns', {gameName: this.gameName, splitColumns: splitColumns})
+    },
     toggleWipLimits() {
-      const wip = document.getElementById('wipLimits').checked
-      this.socket.emit('updateWipLimits', {gameName: this.gameName, wipLimits: wip})
+      const wipLimits = document.getElementById('wip-limits').checked
+      this.socket.emit('updateWipLimits', {gameName: this.gameName, wipLimits: wipLimits})
+    },
+    toggleWipLimitType(wipLimitType) {
+      this.socket.emit('updateWipLimitType', {gameName: this.gameName, wipLimitType: wipLimitType})
     },
     toggleStealth() {
       const isStealth = document.getElementById('isStealth').checked
@@ -149,7 +185,8 @@ export default {
     },
     addColumn() {
       const column = document.getElementById('add-column').value
-      this.socket.emit('addColumn', {gameName: this.gameName, column: column})
+      const colour = document.getElementById('add-column-colour').value
+      this.socket.emit('addColumn', {gameName: this.gameName, column: column, colour: colour})
     },
     toggleTeamActive(team) {
       const include = document.getElementById('team-active-' + team).checked
@@ -175,6 +212,12 @@ export default {
     }
     td {
       border: none;
+
+      &.column-name {
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+      }
     }
     .fa-trash-alt, .fa-save, .fa-chevron-up, .fa-chevron-down {
       margin: 0 auto;

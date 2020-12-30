@@ -32,6 +32,7 @@ const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 
 const dbStore = require('./store/dbStore.js')
+const statistics = require('./store/statistics.js')
 
 const MongoClient = require('mongodb').MongoClient
 
@@ -85,6 +86,9 @@ function doDb(fun, data) {
       case 'updateEffort':
         dbStore.updateEffort(err, client, db, io, data, debugOn)
         break
+      case 'moveCardToNextColumn':
+        dbStore.moveCardToNextColumn(err, client, db, io, data, debugOn)
+        break
       case 'addEffortToOthersCard':
         dbStore.addEffortToOthersCard(err, client, db, io, data, debugOn)
         break
@@ -107,6 +111,12 @@ function doDb(fun, data) {
         dbStore.pairingDay(err, client, db, io, data, debugOn)
         break
 
+      // Statistics
+
+      case 'updateStatistic':
+        statistics.updateStatistic(err, client, db, io, data, debugOn)
+        break
+
       // Facilitator
       //
       case 'updateTeamActive':
@@ -116,10 +126,16 @@ function doDb(fun, data) {
         dbStore.updateGameInclude(err, client, db, io, data, debugOn)
         break
       case 'updateWipLimits':
-        dbStore.updateWipLimits(err, client, db, io, data, debugOn)
+        dbStore.setGameParamater(err, client, db, io, data, 'wipLimits', debugOn)
+        break
+      case 'updateWipLimitType':
+        dbStore.setGameParamater(err, client, db, io, data, 'wipLimitType', debugOn)
         break
       case 'updateStealth':
-        dbStore.updateStealth(err, client, db, io, data, debugOn)
+        dbStore.setGameParamater(err, client, db, io, data, 'stealth', debugOn)
+        break
+      case 'updateSplitColumns':
+        dbStore.setGameParamater(err, client, db, io, data, 'splitColumns', debugOn)
         break
       case 'updateIncludeColumn':
         dbStore.updateIncludeColumn(err, client, db, io, data, debugOn)
@@ -198,6 +214,10 @@ io.on('connection', (socket) => {
 
   socket.on('updateEffort', (data) => { doDb('updateEffort', data) })
 
+  socket.on('moveCardToNextColumnError', (data) => { emit('moveCardToNextColumnError', data) })
+
+  socket.on('moveCardToNextColumn', (data) => { doDb('moveCardToNextColumn', data) })
+
   socket.on('pairingDay', (data) => { doDb('pairingDay', data) })
 
   socket.on('resetEffort', (data) => { emit('resetEffort', data) })
@@ -206,15 +226,13 @@ io.on('connection', (socket) => {
 
   socket.on('updateOtherTeamEffort', (data) => { emit('updateOtherTeamEffort', data) })
 
-  socket.on('updateProjectEstimate', (data) => { doDb('updateProjectEstimate', data) })
-
-  socket.on('updateMVPEstimate', (data) => { doDb('updateMVPEstimate', data) })
-
-  socket.on('updateReEstimate', (data) => { doDb('updateReEstimate', data) })
-
   socket.on('startAutoDeploy', (data) => { doDb('startAutoDeploy', data) })
 
   socket.on('incrementAutoDeploy', (data) => { doDb('incrementAutoDeploy', data) })
+
+  // statistics
+
+  socket.on('updateStatistic', (data) => { doDb('updateStatistic', data) })
 
   // Facilitator View
 
@@ -226,7 +244,11 @@ io.on('connection', (socket) => {
 
   socket.on('updateWipLimits', (data) => { doDb('updateWipLimits', data) })
 
-  socket.on('updateIncludeColumn', (data) => { doDb('updateIncludeColumn', data) })
+  socket.on('updateWipLimitType', (data) => { doDb('updateWipLimitType', data) })
+
+  socket.on('updateWipLimits', (data) => { doDb('updateWipLimits', data) })
+
+  socket.on('updateSplitColumns', (data) => { doDb('updateSplitColumns', data) })
 
   socket.on('updateGameInclude', (data) => { doDb('updateGameInclude', data) })
 

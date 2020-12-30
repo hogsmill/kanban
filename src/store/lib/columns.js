@@ -1,16 +1,44 @@
 
 module.exports = {
 
-  addColumn: function(columns, column) {
-    const order = columns.length + 1
-    columns.push({
+  getColumnIndex: function(columns, column) {
+    let index = 0
+    for (let i = 0; i < columns.length; i++) {
+      if (column.name == columns[i].name) {
+        index = i
+      }
+    }
+    return index
+  },
+
+  wipLimitReached: function(column, wipLimits) {
+    return wipLimits && column.cards.length >= column.wipLimit
+  },
+
+  addColumn: function(columns, column, colour) {
+    const newColumn = {
       name: column,
-      order: order,
       include: true,
       wipLimit: 0,
+      colour: colour,
       cards: []
-    })
-    return columns
+    }
+    const newColumns = []
+    let doneColumn, order = 1
+    for (let i = 0; i < columns.length; i++) {
+      if (columns[i].name != 'done') {
+        columns[i].order = order
+        order = order + 1
+        newColumns.push(columns[i])
+      } else {
+        doneColumn = columns[i]
+      }
+    }
+    newColumn.order = order
+    newColumns.push(newColumn)
+    doneColumn.order = order + 1
+    newColumns.push(doneColumn)
+    return newColumns
   },
 
   includeColumn: function(columns, column, include) {
@@ -29,11 +57,11 @@ module.exports = {
     const newColumns = []
     let order = 1
     for (let i = 0; i < columns.length; i++) {
-      let column = columns[i]
-      if (column.name != column) {
-        column.order = order
+      let newColumn = columns[i]
+      if (newColumn.name != column) {
+        newColumn.order = order
         order = order + 1
-        newColumns.push(column)
+        newColumns.push(newColumn)
       }
     }
     return newColumns

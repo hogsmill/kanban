@@ -6,6 +6,11 @@
   font-size: 14px;
 }
 
+.container {
+  max-width: 95% !important;
+  width: 95% !important;
+}
+
 button {
   margin-right: 5px;
 }
