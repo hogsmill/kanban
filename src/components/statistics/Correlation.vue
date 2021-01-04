@@ -19,8 +19,11 @@
         -1
       </div>
       <div class="correlation-div rounded">
-        <div :style="{ 'left': correlationPosition(correlation) }">
+        <div :style="{ 'left': correlationPosition(correlation, 0) }">
           {{ correlation }}
+        </div>
+        <div class="correlation-marker" :style="{ 'left': correlationPosition(correlation, 100) }">
+          <i class="fas fa-caret-up"  />
         </div>
       </div>
       <div class="correlation-label">
@@ -47,8 +50,8 @@ export default {
     }
   },
   methods: {
-    correlationPosition(value) {
-      return parseInt(290 * (value + 1)) - 290 + 'px'
+    correlationPosition(value, n) {
+      return parseInt(290 * (value + 1)) - 290 - n + 'px'
     }
   }
 }
@@ -99,11 +102,21 @@ export default {
 
         div {
           position: relative;
-          width: 20px;
+          width: 100px;
           text-align: center;
           font-size: xx-large;
           font-weight: bold;
           color: #fff;
+        }
+
+        .correlation-marker {
+          position: relative;
+          top: 32px;
+          font-size: xx-large;
+
+          .fas {
+            color: #888;
+          }
         }
       }
     }

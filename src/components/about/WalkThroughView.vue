@@ -65,8 +65,18 @@
         <h4>Welcome to the Kanban Playground</h4>
         <div>
           <p>
-            To get started, just click on the card stack in <b>Backlog</b>, and
-            start playing. Click the <b>Statistics</b> button when you've completed
+            To get started...
+          </p>
+          <p>Click <b>Set Up</b> to set up a game. You can play as a single team or
+            multiple teams - just set up in <b>Facilitator</b> once you've created
+            your game.
+          </p>
+          <p>
+            To play the game, just click on the card stack in <b>Backlog</b>, and
+            start playing. Every member has 4 units of efort per day.
+          </p>
+          <p>
+            Click the <b>Statistics</b> button when you've completed
             some cards to see analyses of how you're doing.
           </p>
         </div>
@@ -99,7 +109,8 @@ export default {
       default: { width: 650, height: 260 },
       positions: {
         1: {},
-        2: {}
+        2: {},
+        3: {}
       }
     }
   },
@@ -123,7 +134,7 @@ export default {
   },
   methods: {
     noOfScreens() {
-      return Object.keys(this.positions).length + 1
+      return Object.keys(this.positions).length
     },
     setDefault() {
       const elem = document.getElementsByClassName('vm--modal')[0].getBoundingClientRect()

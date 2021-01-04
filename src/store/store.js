@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    thisGame: 'Kanban Explorer',
+    thisGame: 'Kanban Playground',
     connections: 0,
     walkThrough: false,
     showFacilitator: false,
@@ -85,6 +85,12 @@ export const store = new Vuex.Store({
     reEstimate: 0,
     gameState: [],
     games: [],
+    graphConfig: {
+      monteCarlo: {
+        runs: 1000,
+        cards: 50
+      }
+    },
     statistics: {
       correlation: 0,
       cycleTime: {
@@ -170,6 +176,39 @@ export const store = new Vuex.Store({
                 return data.datasets[0].data[tooltipItem.index].label
               }
             }
+          },
+          legend: {display: false},
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      },
+      monteCarlo: {
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Number of times run completes in this many days',
+            backgroundColor: '#f87979',
+            pointBackgroundColor: 'white',
+            borderWidth: 1,
+            pointBorderColor: '#249EBF',
+            data: []
+          }]
+        },
+        percentiles: {
+          75: 0,
+          90: 0,
+          95: 0,
+          99: 0
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {beginAtZero: true},
+              gridLines: {display: true}
+            }],
+            xAxes: [{
+              gridLines: {display: false}
+            }]
           },
           legend: {display: false},
           responsive: true,
@@ -377,6 +416,12 @@ export const store = new Vuex.Store({
     },
     getScatterPlot: (state) => {
       return state.statistics.scatterPlot
+    },
+    getMonteCarlo: (state) => {
+      return state.statistics.monteCarlo
+    },
+    getGraphConfig: (state) => {
+      return state.graphConfig
     }
   },
   mutations: {
@@ -416,6 +461,7 @@ export const store = new Vuex.Store({
       state.wipLimitType = payload.wipLimitType
       state.splitColumns = payload.splitColumns
       state.colours = payload.colours
+      state.graphConfig = payload.graphConfig
     },
     updateGameName: (state, payload) => {
       state.gameName = payload

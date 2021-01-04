@@ -1,7 +1,7 @@
 
 module.exports = {
 
-  scatterPlot: function(workCards) {
+  run: function(workCards) {
     const data = []
     for (let i = 0; i < workCards.length; i++) {
       if (workCards[i].delivery) {

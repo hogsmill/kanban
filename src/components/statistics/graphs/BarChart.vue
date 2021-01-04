@@ -12,6 +12,9 @@ export default {
     },
     distribution() {
       return this.$store.getters.getDistribution
+    },
+    monteCarlo() {
+      return this.$store.getters.getMonteCarlo
     }
   },
   mounted() {
@@ -21,6 +24,9 @@ export default {
         break
       case 'distribution':
         this.renderChart(this.distribution.data, this.distribution.options)
+        break
+      case 'monte-carlo':
+        this.renderChart(this.monteCarlo.data, this.monteCarlo.options)
         break
     }
   }

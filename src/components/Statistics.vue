@@ -77,14 +77,13 @@ export default {
     },
     scatterPlot() {
       return this.$store.getters.getScatterPlot
+    },
+    monteCarlo() {
+      return this.$store.getters.getMonteCarlo
     }
   },
   created() {
-    this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'correlation'})
-    this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'cycle-time'})
-    this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'distribution'})
-    this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'scatter-plot'})
-    this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'monte-carlo'})
+    this.getStatistics()
 
     this.socket.on('updateStatistic', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName) {
@@ -101,16 +100,27 @@ export default {
           case 'scatter-plot':
             this.updateScatterPlot(data)
             break
+          case 'monte-carlo':
+            this.updateMonteCarlo(data)
+            break
         }
       }
     })
   },
   methods: {
     show() {
+      this.getStatistics()
       this.$modal.show('statistics-modal')
     },
     hide() {
       this.$modal.hide('statistics-modal')
+    },
+    getStatistics() {
+      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'correlation'})
+      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'cycle-time'})
+      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'distribution'})
+      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'scatter-plot'})
+      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'monte-carlo'})
     },
     showStatistic(statistic) {
       this.statistic = statistic
@@ -145,6 +155,26 @@ export default {
       scatterPlot.data.datasets[0].data = data.results
       scatterPlot.limits = data.limits
       this.$store.dispatch('updateStatistic', {statistic: 'scatterPlot', data: scatterPlot})
+    },
+    updateMonteCarlo(data) {
+      const monteCarlo = this.monteCarlo
+      monteCarlo.data.labels = data.results.days
+      monteCarlo.data.datasets[0].data = data.results.counts
+      monteCarlo.percentiles = data.results.percentiles
+      monteCarlo.data.datasets[0].backgroundColor = []
+      const startDay = monteCarlo.data.labels[0]
+      for (let i = startDay; i < monteCarlo.data.datasets[0].data.length + startDay; i++) {
+        if (i <= data.results.percentiles[75]) {
+          monteCarlo.data.datasets[0].backgroundColor.push('green')
+        } else if (i <= data.results.percentiles[90]) {
+          monteCarlo.data.datasets[0].backgroundColor.push('orange')
+        } else if (i <= data.results.percentiles[95]) {
+          monteCarlo.data.datasets[0].backgroundColor.push('yellow')
+        } else {
+          monteCarlo.data.datasets[0].backgroundColor.push('red')
+        }
+      }
+      this.$store.dispatch('updateStatistic', {statistic: 'monteCarlo', data: monteCarlo})
     }
   }
 }

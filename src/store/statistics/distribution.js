@@ -14,7 +14,7 @@ function maxDeliveryTime(workCards) {
 
 module.exports = {
 
-  distribution: function(workCards) {
+  run: function(workCards) {
     const results = {
       days: [],
       counts: []

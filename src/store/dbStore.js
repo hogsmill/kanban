@@ -87,6 +87,12 @@ function newGame(data) {
     wipLimitType: 'soft',
     splitColumns: false,
     colours: colours,
+    graphConfig: {
+      monteCarlo: {
+        runs: 1000,
+        cards: 50
+      }
+    },
     created: new Date().toISOString(),
     restarted: [],
     lastaccess: new Date().toISOString()

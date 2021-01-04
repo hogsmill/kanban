@@ -3,7 +3,7 @@ const cardFuns = require('../lib/cards.js')
 
 module.exports = {
 
-  cycleTime: function(workCards) {
+  run: function(workCards) {
     const results = {
       ids: [],
       effort: [],
