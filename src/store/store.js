@@ -195,6 +195,7 @@ export const store = new Vuex.Store({
           }]
         },
         percentiles: {
+          50: 0,
           75: 0,
           90: 0,
           95: 0,

@@ -27,9 +27,16 @@ ON_DEATH(function(signal, err) {
   })
 })
 
-const app = require('express')()
+const express = require('express')
+const app = express()
 const http = require('http').createServer(app)
-const io = require('socket.io')(http)
+const io = require("socket.io")(http, {
+  cors: {
+    origins: ["http://localhost:*", "http://agilesimulations.co.uk"],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+})
 
 const dbStore = require('./store/dbStore.js')
 const statistics = require('./store/statistics.js')
@@ -60,109 +67,109 @@ function doDb(fun, data) {
 
     switch(fun) {
       case 'getAvailableGames':
-        dbStore.getAvailableGames(err, client, db, io, data, debugOn)
+        dbStore.getAvailableGames(db, io, data, debugOn)
         break
       case 'loadGame':
-        dbStore.loadGame(err, client, db, io, data, debugOn)
+        dbStore.loadGame(db, io, data, debugOn)
         break
       case 'restartGame':
-        dbStore.restartGame(err, client, db, io, data, debugOn)
+        dbStore.restartGame(db, io, data, debugOn)
         break
       case 'deleteGameMeta':
-        dbStore.deleteGameMeta(err, client, db, io, data, debugOn)
+        dbStore.deleteGameMeta(db, io, data, debugOn)
         break
       case 'deleteGame':
-        dbStore.deleteGame(err, client, db, io, data, debugOn)
+        dbStore.deleteGame(db, io, data, debugOn)
         break
       case 'updateCurrentDay':
-        dbStore.updateCurrentDay(err, client, db, io, data, debugOn)
+        dbStore.updateCurrentDay(db, io, data, debugOn)
         break
       case 'pullInCard':
-        dbStore.pullInCard(err, client, db, io, data, debugOn)
+        dbStore.pullInCard(db, io, data, debugOn)
         break
       case 'setColumnWip':
-        dbStore.setColumnWip(err, client, db, io, data, debugOn)
+        dbStore.setColumnWip(db, io, data, debugOn)
         break
       case 'updateEffort':
-        dbStore.updateEffort(err, client, db, io, data, debugOn)
+        dbStore.updateEffort(db, io, data, debugOn)
         break
       case 'moveCardToNextColumn':
-        dbStore.moveCardToNextColumn(err, client, db, io, data, debugOn)
+        dbStore.moveCardToNextColumn(db, io, data, debugOn)
         break
       case 'addEffortToOthersCard':
-        dbStore.addEffortToOthersCard(err, client, db, io, data, debugOn)
+        dbStore.addEffortToOthersCard(db, io, data, debugOn)
         break
       case 'incrementAutoDeploy':
-        dbStore.incrementAutoDeploy(err, client, db, io, data, debugOn)
+        dbStore.incrementAutoDeploy(db, io, data, debugOn)
         break
       case 'startAutoDeploy':
-        dbStore.startAutoDeploy(err, client, db, io, data, debugOn)
+        dbStore.startAutoDeploy(db, io, data, debugOn)
         break
       case 'updateProjectEstimate':
-        dbStore.updateProjectEstimate(err, client, db, io, data, debugOn)
+        dbStore.updateProjectEstimate(db, io, data, debugOn)
         break
       case 'updateMVPEstimate':
-        dbStore.updateMVPEstimate(err, client, db, io, data, debugOn)
+        dbStore.updateMVPEstimate(db, io, data, debugOn)
         break
       case 'updateReEstimate':
-        dbStore.updateReEstimate(err, client, db, io, data, debugOn)
+        dbStore.updateReEstimate(db, io, data, debugOn)
         break
       case 'pairingDay':
-        dbStore.pairingDay(err, client, db, io, data, debugOn)
+        dbStore.pairingDay(db, io, data, debugOn)
         break
 
       // Statistics
 
       case 'updateStatistic':
-        statistics.updateStatistic(err, client, db, io, data, debugOn)
+        statistics.updateStatistic(db, io, data, debugOn)
         break
 
       // Facilitator
       //
       case 'updateTeamActive':
-        dbStore.updateTeamActive(err, client, db, io, data, debugOn)
+        dbStore.updateTeamActive(db, io, data, debugOn)
         break
       case 'updateGameInclude':
-        dbStore.updateGameInclude(err, client, db, io, data, debugOn)
+        dbStore.updateGameInclude(db, io, data, debugOn)
         break
       case 'updateWipLimits':
-        dbStore.setGameParamater(err, client, db, io, data, 'wipLimits', debugOn)
+        dbStore.setGameParamater(db, io, data, 'wipLimits', debugOn)
         break
       case 'updateWipLimitType':
-        dbStore.setGameParamater(err, client, db, io, data, 'wipLimitType', debugOn)
+        dbStore.setGameParamater(db, io, data, 'wipLimitType', debugOn)
         break
       case 'updateStealth':
-        dbStore.setGameParamater(err, client, db, io, data, 'stealth', debugOn)
+        dbStore.setGameParamater(db, io, data, 'stealth', debugOn)
         break
       case 'updateSplitColumns':
-        dbStore.setGameParamater(err, client, db, io, data, 'splitColumns', debugOn)
+        dbStore.setGameParamater(db, io, data, 'splitColumns', debugOn)
         break
       case 'updateIncludeColumn':
-        dbStore.updateIncludeColumn(err, client, db, io, data, debugOn)
+        dbStore.updateIncludeColumn(db, io, data, debugOn)
         break
       case 'moveColumnUp':
-        dbStore.moveColumnUp(err, client, db, io, data, debugOn)
+        dbStore.moveColumnUp(db, io, data, debugOn)
         break
       case 'moveColumnDown':
-        dbStore.moveColumnDown(err, client, db, io, data, debugOn)
+        dbStore.moveColumnDown(db, io, data, debugOn)
         break
       case 'addColumn':
-        dbStore.addColumn(err, client, db, io, data, debugOn)
+        dbStore.addColumn(db, io, data, debugOn)
         break
       case 'deleteColumn':
-        dbStore.deleteColumn(err, client, db, io, data, debugOn)
+        dbStore.deleteColumn(db, io, data, debugOn)
         break
 
      // Game State
      //
      case 'gameState':
-       dbStore.gameState(err, client, db, io, data, debugOn)
+       dbStore.gameState(db, io, data, debugOn)
        break
     case 'getGames':
-      dbStore.getGames(err, client, db, io, data, debugOn)
+      dbStore.getGames(db, io, data, debugOn)
       break
     case 'getGameDetails':
-      dbStore.getGameDetails(err, client, db, io, data, debugOn)
+      dbStore.getGameDetails(db, io, data, debugOn)
       break
 
       default:

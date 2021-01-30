@@ -7,7 +7,7 @@ const monteCarlo = require('./statistics/monteCarlo.js')
 
 module.exports = {
 
-  updateStatistic: function(err, client, db, io, data, debugOn) {
+  updateStatistic: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateStatistic', data) }
 

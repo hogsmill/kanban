@@ -126,7 +126,7 @@ function newTeam(gameName, teamName) {
   return team
 }
 
-function _getGames(err, client, db, io, data, debugOn) {
+function _getGames(db, io, data, debugOn) {
 
   if (debugOn) { console.log('getGames') }
 
@@ -160,11 +160,11 @@ function updateGame(db, io, res) {
 
 module.exports = {
 
-  gameState: function(err, client, db, io, data, debugOn) {
+  gameState: function(db, io, data, debugOn) {
     gameState.update(db, io, data)
   },
 
-  getGameDetails: function(err, client, db, io, data, debugOn) {
+  getGameDetails: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('getGameDetails', data) }
 
@@ -187,17 +187,17 @@ module.exports = {
     })
   },
 
-  getGames: function(err, client, db, io, data, debugOn) {
-    _getGames(err, client, db, io, data, debugOn)
+  getGames: function(db, io, data, debugOn) {
+    _getGames(db, io, data, debugOn)
   },
 
-  getAvailableGames: function(err, client, db, io, data, debugOn) {
+  getAvailableGames: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('getAvailableGames', data) }
 
   },
 
-  loadGame: function(err, client, db, io, data, debugOn) {
+  loadGame: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('loadGame', data) }
 
@@ -247,7 +247,7 @@ module.exports = {
     })
   },
 
-  restartGame: function(err, client, db, io, data, debugOn) {
+  restartGame: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('restartGame', data) }
 
@@ -281,7 +281,7 @@ module.exports = {
     })
   },
 
-  deleteGameMeta: function(err, client, db, io, data, debugOn) {
+  deleteGameMeta: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('deleteGameMeta', data) }
 
@@ -290,13 +290,13 @@ module.exports = {
       if (res) {
         db.collection('kanbanGames').deleteOne({'_id': res._id}, function(err, res) {
           if (err) throw err
-          _getGames(err, client, db, io, data, debugOn)
+          _getGames(db, io, data, debugOn)
         })
       }
     })
   },
 
-  deleteGame: function(err, client, db, io, data, debugOn) {
+  deleteGame: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('deleteGame', data) }
 
@@ -312,7 +312,7 @@ module.exports = {
     })
   },
 
-  updateCurrentDay: function(err, client, db, io, data, debugOn) {
+  updateCurrentDay: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateCurrentDay', data) }
 
@@ -362,7 +362,7 @@ module.exports = {
     })
   },
 
-  pullInCard: function(err, client, db, io, data, debugOn) {
+  pullInCard: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('pullInCard', data) }
 
@@ -387,7 +387,7 @@ module.exports = {
     })
   },
 
-  setColumnWip: function(err, client, db, io, data, debugOn) {
+  setColumnWip: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('setColumnWip', data) }
 
@@ -414,7 +414,7 @@ module.exports = {
     })
   },
 
-  updateEffort: function(err, client, db, io, data, debugOn) {
+  updateEffort: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateEffort', data) }
 
@@ -446,7 +446,7 @@ module.exports = {
     })
   },
 
-  moveCardToNextColumn: function(err, client, db, io, data, debugOn) {
+  moveCardToNextColumn: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('moveCardToNextColumn', data) }
 
@@ -466,7 +466,7 @@ module.exports = {
     })
   },
 
-  pairingDay: function(err, client, db, io, data, debugOn) {
+  pairingDay: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('pairingDay', data) }
 
@@ -524,7 +524,7 @@ module.exports = {
     })
   },
 
-  addEffortToOthersCard: function(err, client, db, io, data, debugOn) {
+  addEffortToOthersCard: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('addEffortToOthersCard', data) }
 
@@ -546,7 +546,7 @@ module.exports = {
     })
   },
 
-  startAutoDeploy: function(err, client, db, io, data, debugOn) {
+  startAutoDeploy: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('startAutoDeploy', data) }
 
@@ -559,7 +559,7 @@ module.exports = {
     })
   },
 
-  incrementAutoDeploy: function(err, client, db, io, data, debugOn) {
+  incrementAutoDeploy: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('incrementAutoDeploy', data) }
 
@@ -579,7 +579,7 @@ module.exports = {
     })
   },
 
-  updateTeamActive: function(err, client, db, io, data, debugOn) {
+  updateTeamActive: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateTeamActive', data) }
 
@@ -606,7 +606,7 @@ module.exports = {
     })
   },
 
-  updateGameInclude: function(err, client, db, io, data, debugOn) {
+  updateGameInclude: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateGameInclude', data) }
 
@@ -624,7 +624,7 @@ module.exports = {
     })
   },
 
-  setGameParamater: function(err, client, db, io, data, field, debugOn) {
+  setGameParamater: function(db, io, data, field, debugOn) {
 
     if (debugOn) { console.log('setGameParamater', field, data) }
 
@@ -637,7 +637,7 @@ module.exports = {
     })
   },
 
-  updateIncludeColumn: function(err, client, db, io, data, debugOn) {
+  updateIncludeColumn: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('updateIncludeColumn', data) }
 
@@ -657,7 +657,7 @@ module.exports = {
     })
   },
 
-  moveColumnUp: function(err, client, db, io, data, debugOn) {
+  moveColumnUp: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('moveColumnUp', data) }
 
@@ -696,7 +696,7 @@ module.exports = {
     })
   },
 
-  moveColumnDown: function(err, client, db, io, data, debugOn) {
+  moveColumnDown: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('moveColumnDown', data) }
 
@@ -735,7 +735,7 @@ module.exports = {
     })
   },
 
-  addColumn: function(err, client, db, io, data, debugOn) {
+  addColumn: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('addColumn', data) }
 
@@ -755,7 +755,7 @@ module.exports = {
     })
   },
 
-  deleteColumn: function(err, client, db, io, data, debugOn) {
+  deleteColumn: function(db, io, data, debugOn) {
 
     if (debugOn) { console.log('deleteColumn', data) }
 

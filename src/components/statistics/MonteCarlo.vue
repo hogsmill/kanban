@@ -3,6 +3,7 @@
     <div class="monte-carlo-percentiles rounded">
       The probability of completing {{ graphConfig.monteCarlo.cards }} cards is
       <ul>
+        <li><div class="grey" /> 5o% in {{ monteCarlo.percentiles[50] }} days </li>
         <li><div class="green" /> 75% in {{ monteCarlo.percentiles[75] }} days </li>
         <li><div class="orange" /> 90% in {{ monteCarlo.percentiles[90] }} days </li>
         <li><div class="yellow" /> 95% in {{ monteCarlo.percentiles[95] }} days </li>
@@ -52,6 +53,9 @@ export default {
       width: 10px;
       display: inline-block;
 
+      &.grey {
+        background-color: #bbb;
+      }
       &.green {
         background-color: green;
       }

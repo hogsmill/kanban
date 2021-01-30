@@ -51,6 +51,7 @@ function cardsPerDayDistribution(cards) {
 
 function percentages(counts, days, config) {
   const percentiles = {},
+        _50 = config.runs * 0.5,
         _75 = config.runs * 0.75,
         _90 = config.runs * 0.90,
         _95 = config.runs * 0.95,
@@ -66,6 +67,8 @@ function percentages(counts, days, config) {
       percentiles[90] = days[i]
     } else if (count >= _75) {
       percentiles[75] = days[i]
+    } else if (count >= _50) {
+      percentiles[50] = days[i]
     }
   }
   return percentiles

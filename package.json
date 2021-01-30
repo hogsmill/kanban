@@ -5,11 +5,6 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 8096",
     "build": "vue-cli-service build",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:e2e:ci": "vue-cli-service test:e2e --headless",
-    "test:e2e:record": "vue-cli-service test:e2e --headless --record",
-    "cy:verify": "cypress verify",
-    "cy:info": "cypress info",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -19,8 +14,8 @@
     "javascript-time-ago": "^2.3.3",
     "jquery": "^3.5.1",
     "mongodb": "^3.6.2",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0",
+    "socket.io": "^3.1.0",
+    "socket.io-client": "^3.1.0",
     "uuid": "^8.3.0",
     "vue": "^2.6.12",
     "vue-chart.js": "^0.2.0",
