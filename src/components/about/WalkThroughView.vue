@@ -42,7 +42,7 @@
         <div>
           <p>
             To see what the game can do, just add <b>?host</b> to the end of the
-            URL, i.e. <a href="http://agilesimulations.co.uk/kanban/?host">http://agilesimulations.co.uk/kanban/?host</a>
+            URL, i.e. <a href="https://agilesimulations.co.uk/kanban/?host">https://agilesimulations.co.uk/kanban/?host</a>
             and go to the facilitator tab. There, you can set all kinds of things like:
           </p>
           <ul>
