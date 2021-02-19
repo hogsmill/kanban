@@ -152,22 +152,23 @@ export default {
     },
     addEffort(column) {
       let message = '', effort = 0
-      if (this.workCard.blocked) {
+      const workCard = this.workCard
+      if (workCard.blocked) {
         message = 'card is blocked'
       } else if (this.canAssign(column)) {
         if (this.myEffort.available == 0) {
           message = 'all effort assigned'
-        } else if (this.workCard.effort[column] == this.workCard[column]) {
+        } else if (workCard.effort[column] == workCard[column]) {
           message = 'all work completed'
         } else {
           if (roles.iHaveRole(column, this.myRole, this.myOtherRoles)) {
-            this.workCard.effort[column] = this.workCard.effort[column] + 1
+            workCard.effort[column] = workCard.effort[column] + 1
             effort = 1
           } else {
             if (this.myEffort.available < 2) {
               message = 'you only have one effort point left'
             } else {
-              this.workCard.effort[column] = this.workCard.effort[column] + 1
+              workCard.effort[column] = workCard.effort[column] + 1
               effort = 2
               if (column == this.column) {
                 this.socket.emit('pairingDay', {gameName: this.gameName, teamName: this.teamName, name: this.myName, column: column, day: this.currentDay})
@@ -189,13 +190,13 @@ export default {
           self.$store.dispatch('updateMessage', '')
         }, 2000)
       } else {
-        this.socket.emit('updatePersonEffort', {gameName: this.gameName, teamName: this.teamName, workCard: this.workCard, name: this.myName, column: column})
+        this.socket.emit('updatePersonEffort', {gameName: this.gameName, teamName: this.teamName, workCard: workCard, name: this.myName, column: column})
         this.socket.emit('updateEffort', {
           gameName: this.gameName,
           teamName: this.teamName,
           name: this.myName,
           role: this.myRole,
-          workCard: this.workCard,
+          workCard: workCard,
           column: column,
           effort: effort})
       }
