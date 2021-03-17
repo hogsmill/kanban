@@ -1,6 +1,6 @@
 <template>
   <div class="board-container">
-    <EventCard :socket="socket" />
+    <EventCard />
     <div class="game-board">
       <table class="board-table rounded">
         <thead>
@@ -32,12 +32,12 @@
         <tbody>
           <tr>
             <td class="options-column">
-              <WorkCardStack :socket="socket" />
+              <WorkCardStack />
               <OtherSkills />
-              <OtherTeams v-if="teams.length > 1" :socket="socket" />
+              <OtherTeams v-if="teams.length > 1" />
             </td>
             <td v-for="(column, index) in allColumns()" :key="index" :class="columnClass(column)">
-              <Column :column="column" :socket="socket" />
+              <Column :column="column" />
             </td>
           </tr>
         </tbody>
@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import bus from '../socket.js'
+
 import stringFuns from '../lib/stringFuns.js'
 
 import OtherTeams from './board/OtherTeams.vue'
@@ -63,9 +65,6 @@ export default {
     Column,
     EventCard
   },
-  props: [
-    'socket'
-  ],
   data() {
     return {
       editingWip: ''
@@ -131,7 +130,7 @@ export default {
       if (!wip.match(/^[0-9]+$/)) {
         alert('Please enter a number for WIP')
       } else {
-        this.socket.emit('setColumnWip', {gameName: this.gameName, teamName: this.teamName, column: column, wipLimit: wip})
+        bus.$emit('sendSetColumnWip', {gameName: this.gameName, teamName: this.teamName, column: column, wipLimit: wip})
         this.editingWip = ''
       }
     },
@@ -147,7 +146,7 @@ export default {
         column.name == 'deploy'
     },
     startAutoDeploy() {
-      this.socket.emit('startAutoDeploy', {gameName: this.gameName, teamName: this.teamName})
+      bus.$emit('sendStartAutoDeploy', {gameName: this.gameName, teamName: this.teamName})
     },
     columnClass(column) {
       let classStr = ''

@@ -20,11 +20,11 @@ const initialTeams = [
   { name: 'Teal', include: false }
 ]
 
-const design = '#b10018';
-const develop = '#76a001';
-const test = '#0067b1';
-const deploy = '#4f0384';
-const done = 'navy';
+const design = '#b10018'
+const develop = '#76a001'
+const test = '#0067b1'
+const deploy = '#4f0384'
+const done = 'navy'
 
 const colours = [
   design,
@@ -160,7 +160,7 @@ function updateGame(db, io, res) {
 
 module.exports = {
 
-  gameState: function(db, io, data, debugOn) {
+  gameState: function(db, io, data) {
     gameState.update(db, io, data)
   },
 
@@ -179,7 +179,7 @@ module.exports = {
             }
           }
         }
-        details = {
+        const details = {
           hosts: hosts
         }
         io.emit('updateGameDetails', { gameName: data.gameName, details : details})
@@ -288,7 +288,7 @@ module.exports = {
     db.collection('kanbanGames').findOne({name: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
-        db.collection('kanbanGames').deleteOne({'_id': res._id}, function(err, res) {
+        db.collection('kanbanGames').deleteOne({'_id': res._id}, function(err, ) {
           if (err) throw err
           _getGames(db, io, data, debugOn)
         })
@@ -304,7 +304,7 @@ module.exports = {
       if (err) throw err
       if (res.length) {
         for (let i = 0; i < res.length; i++) {
-          db.collection('kanban').deleteOne({'_id': res[i]._id}, function(err, res) {
+          db.collection('kanban').deleteOne({'_id': res[i]._id}, function(err, ) {
             if (err) throw err
           })
         }
@@ -322,7 +322,7 @@ module.exports = {
         let updating = false
         if (res.currentDay != data.currentDay) {
           updating = true
-          currentDay = res.currentDay + 1
+          const currentDay = res.currentDay + 1
           res = teamFuns.updateTeamCapabilities(res, data, res.daysEffort)
           const columns = res.columns, workCards = res.workCards
           for (let i = 0; i < columns.length; i++) {

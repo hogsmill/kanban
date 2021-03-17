@@ -31,10 +31,9 @@
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 export default {
-  props: [
-    'socket'
-  ],
   data() {
     return {
       message: ''
@@ -76,8 +75,8 @@ export default {
           self.$store.dispatch('updateMessage', '')
         }, 2000)
       } else {
-        this.socket.emit('addEffortToOthersCard', {gameName: this.gameName, teamName: this.teamName, card: card, myName: this.myName, effort: 1})
-        this.socket.emit('updateOtherTeamEffort', {gameName: this.gameName, teamName: this.teamName, card: card, name: this.myName, effort: this.myEffort})
+        bus.$emit('sendAddEffortToOthersCard', {gameName: this.gameName, teamName: this.teamName, card: card, myName: this.myName, effort: 1})
+        bus.$emit('sendUpdateOtherTeamEffort', {gameName: this.gameName, teamName: this.teamName, card: card, name: this.myName, effort: this.myEffort})
       }
     }
   }

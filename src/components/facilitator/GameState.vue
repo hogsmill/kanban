@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 import OtherCards from './gameState/OtherCards.vue'
 import Column from './gameState/Column.vue'
 
@@ -75,9 +77,6 @@ export default {
     OtherCards,
     Column
   },
-  props: [
-    'socket'
-  ],
   data() {
     return {
       showGameState: true,
@@ -119,7 +118,7 @@ export default {
     restartGame() {
       const restartGame = confirm('Are you sure you want to re-start this game?')
       if (restartGame) {
-        this.socket.emit('restartGame', {gameName: this.gameName, stealth: this.stealth})
+        bus.$emit('sendRestartGame', {gameName: this.gameName, stealth: this.stealth})
       }
     },
     effort(role) {

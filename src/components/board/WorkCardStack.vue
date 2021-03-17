@@ -7,10 +7,9 @@
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 export default {
-  props: [
-    'socket'
-  ],
   computed: {
     gameName() {
       return this.$store.getters.getGameName
@@ -27,7 +26,7 @@ export default {
   },
   methods: {
     pullInCard() {
-      this.socket.emit('pullInCard', {gameName: this.gameName, teamName: this.teamName, teams: this.teams})
+      bus.$emit('sendPullInCard', {gameName: this.gameName, teamName: this.teamName, teams: this.teams})
     }
   }
 }

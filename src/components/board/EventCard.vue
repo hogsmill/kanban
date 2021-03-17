@@ -31,10 +31,9 @@
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 export default {
-  props: [
-    'socket'
-  ],
   data() {
     return {
       showing: false
@@ -59,13 +58,13 @@ export default {
   },
   mounted() {
     const self = this
-    this.socket.on('loadTeam', (data) => {
+    bus.$on('loadTeam', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName) {
         self.hide()
       }
     })
 
-    this.socket.on('showEventCard', (data) => {
+    bus.$on('showEventCard', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName) {
         self.$modal.show('event-card-popup')
       }
@@ -88,7 +87,7 @@ export default {
           updateData.canStartAutoDeploy = true
         }
       }
-      this.socket.emit('updateCurrentDay', updateData)
+      bus.$emit('sendUpdateCurrentDay', updateData)
     },
     doFunction() {
       let data

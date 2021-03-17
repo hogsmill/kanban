@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import bus from '../socket.js'
+
 import Correlation from './statistics/Correlation.vue'
 import CycleTime from './statistics/CycleTime.vue'
 import Distribution from './statistics/Distribution.vue'
@@ -54,9 +56,6 @@ export default {
     ScatterPlot,
     MonteCarlo
   },
-  props: [
-    'socket'
-  ],
   data() {
     return {
       statistic: 'correlation'
@@ -85,7 +84,7 @@ export default {
   created() {
     this.getStatistics()
 
-    this.socket.on('updateStatistic', (data) => {
+    bus.$on('updateStatistic', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName) {
         switch(data.statistic) {
           case 'correlation':
@@ -116,11 +115,11 @@ export default {
       this.$modal.hide('statistics-modal')
     },
     getStatistics() {
-      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'correlation'})
-      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'cycle-time'})
-      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'distribution'})
-      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'scatter-plot'})
-      this.socket.emit('updateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'monte-carlo'})
+      bus.$emit('sendUpdateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'correlation'})
+      bus.$emit('sendUpdateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'cycle-time'})
+      bus.$emit('sendUpdateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'distribution'})
+      bus.$emit('sendUpdateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'scatter-plot'})
+      bus.$emit('sendUpdateStatistic', {gameName: this.gameName, teamName: this.teamName, statistic: 'monte-carlo'})
     },
     showStatistic(statistic) {
       this.statistic = statistic

@@ -14,7 +14,8 @@
     </div>
     <div v-if="complete" class="move-card">
       <button class="btn btn-sm btn-site-primary" :disabled="canMoveCard().error" @click="moveCard()"
-              :title="canMoveCard().message ? canMoveCard().message : 'Move card to ' + nextColumn()">
+              :title="canMoveCard().message ? canMoveCard().message : 'Move card to ' + nextColumn()"
+      >
         <i class="fas fa-long-arrow-alt-right" />
       </button>
     </div>
@@ -60,11 +61,12 @@
         </td>
       </tr>
     </table>
-
   </div>
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 import roles from '../../lib/roles.js'
 import columnFuns from '../../lib/columns.js'
 
@@ -72,7 +74,6 @@ export default {
   props: [
     'column',
     'workCard',
-    'socket',
     'complete'
   ],
   data() {
@@ -118,13 +119,13 @@ export default {
   },
   created() {
     const self = this
-    this.socket.on('moveCardToNextColumnError', (data) => {
+    bus.$on('moveCardToNextColumnError', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName && this.workCard.number == data.workCard.number) {
         self.error = data.error
         self.show()
       }
     })
-    this.socket.on('cardNotCompleteError', (data) => {
+    bus.$on('cardNotCompleteError', (data) => {
       if (this.gameName == data.gameName && this.teamName == data.teamName) {
         self.message = 'not complete error'
         self.show()
@@ -171,7 +172,7 @@ export default {
               workCard.effort[column] = workCard.effort[column] + 1
               effort = 2
               if (column == this.column) {
-                this.socket.emit('pairingDay', {gameName: this.gameName, teamName: this.teamName, name: this.myName, column: column, day: this.currentDay})
+                bus.$emit('sendPairingDay', {gameName: this.gameName, teamName: this.teamName, name: this.myName, column: column, day: this.currentDay})
               }
             }
           }
@@ -190,8 +191,8 @@ export default {
           self.$store.dispatch('updateMessage', '')
         }, 2000)
       } else {
-        this.socket.emit('updatePersonEffort', {gameName: this.gameName, teamName: this.teamName, workCard: workCard, name: this.myName, column: column})
-        this.socket.emit('updateEffort', {
+        bus.$emit('sendUpdatePersonEffort', {gameName: this.gameName, teamName: this.teamName, workCard: workCard, name: this.myName, column: column})
+        bus.$emit('sendUpdateEffort', {
           gameName: this.gameName,
           teamName: this.teamName,
           name: this.myName,
@@ -208,7 +209,7 @@ export default {
       return columnFuns.canMoveCardToNextColumn(this.workCard, this.column, this.columns, this.wipLimits, this.wipLimitType)
     },
     moveCard() {
-      this.socket.emit('moveCardToNextColumn', {gameName: this.gameName, teamName: this.teamName, workCard: this.workCard, column: this.column})
+      bus.$emit('sendMoveCardToNextColumn', {gameName: this.gameName, teamName: this.teamName, workCard: this.workCard, column: this.column})
     }
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div class="container about">
     <h1>Kanban Explorer - <span v-if="stealth">(Stealth)</span> Facilitator View</h1>
-    <Connections :socket="socket" />
-    <GameMessaging :socket="socket" />
-    <GameParams :socket="socket" />
-    <GameState :socket="socket" />
-    <Games :socket="socket" />
+    <Connections />
+    <GameMessaging />
+    <GameParams />
+    <GameState />
+    <Games />
     <div v-if="isDev()">
       <Utils />
     </div>
@@ -29,9 +29,6 @@ export default {
     Games,
     Utils
   },
-  props: [
-    'socket'
-  ],
   computed: {
     stealth() {
       return this.$store.getters.getStealth

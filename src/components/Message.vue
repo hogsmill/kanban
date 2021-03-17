@@ -6,9 +6,6 @@
 
 <script>
 export default {
-  props: [
-    'socket'
-  ],
   computed: {
     message() {
       return this.$store.getters.getMessage

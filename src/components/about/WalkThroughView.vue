@@ -67,7 +67,8 @@
           <p>
             To get started...
           </p>
-          <p>Click <b>Set Up</b> to set up a game. You can play as a single team or
+          <p>
+            Click <b>Set Up</b> to set up a game. You can play as a single team or
             multiple teams - just set up in <b>Facilitator</b> once you've created
             your game.
           </p>

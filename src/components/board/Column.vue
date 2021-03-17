@@ -1,10 +1,14 @@
 <template>
   <div class="board-column" :class="'column-' + column.type">
-    <h6 v-if="column.type == 'doing'">Doing</h6>
-    <h6 v-if="column.type == 'done'">Done</h6>
-    <AutoDeploy v-if="showAutoDeploy(column)" :socket="socket" />
+    <h6 v-if="column.type == 'doing'">
+      Doing
+    </h6>
+    <h6 v-if="column.type == 'done'">
+      Done
+    </h6>
+    <AutoDeploy v-if="showAutoDeploy(column)" />
     <div v-for="(card, index) in column.cards" :key="index">
-      <WorkCard v-if="showCard(column, card)" :column="column" :work-card="card" :socket="socket" :complete="cardComplete(card, column.name)" />
+      <WorkCard v-if="showCard(column, card)" :column="column" :work-card="card" :complete="cardComplete(card, column.name)" />
     </div>
   </div>
 </template>
@@ -19,8 +23,7 @@ export default {
     AutoDeploy
   },
   props: [
-    'column',
-    'socket'
+    'column'
   ],
   computed: {
     gameName() {

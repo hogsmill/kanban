@@ -6,9 +6,6 @@
 
 <script>
 export default {
-  props: [
-    'socket'
-  ],
   computed: {
     connections() {
       return this.$store.getters.getConnections

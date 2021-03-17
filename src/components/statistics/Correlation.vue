@@ -23,7 +23,7 @@
           {{ correlation }}
         </div>
         <div class="correlation-marker" :style="{ 'left': correlationPosition(correlation, 100) }">
-          <i class="fas fa-caret-up"  />
+          <i class="fas fa-caret-up" />
         </div>
       </div>
       <div class="correlation-label">
@@ -35,9 +35,6 @@
 
 <script>
 export default {
-  props: [
-    'socket'
-  ],
   computed: {
     gameName() {
       return this.$store.getters.getGameName

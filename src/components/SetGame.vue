@@ -100,13 +100,12 @@
 <script>
 import { v4 as uuidv4 } from 'uuid'
 
+import bus from '../socket.js'
+
 import params from '../lib/params.js'
 import stringFuns from '../lib/stringFuns.js'
 
 export default {
-  props: [
-    'socket'
-  ],
   data() {
     return {
       gameNameEditing: false,
@@ -156,7 +155,7 @@ export default {
   },
   methods: {
     show() {
-      this.socket.emit('getGames')
+      bus.$emit('sendGetGames')
       this.$modal.show('set-up')
     },
     hide() {
@@ -275,7 +274,7 @@ export default {
         this.$store.dispatch('updateGameName', gameName)
         this.$store.dispatch('updateMyName', myName)
         this.$store.dispatch('updateTeamName', teamName)
-        this.socket.emit('loadGame', data)
+        bus.$emit('sendLoadGame', data)
         this.reset()
         this.hide()
       }

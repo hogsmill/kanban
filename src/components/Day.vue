@@ -19,10 +19,9 @@
 </template>
 
 <script>
+import bus from '../socket.js'
+
 export default {
-  props: [
-    'socket'
-  ],
   computed: {
     gameName() {
       return this.$store.getters.getGameName
@@ -56,7 +55,7 @@ export default {
       return days
     },
     next() {
-      this.socket.emit('showEventCard', {gameName: this.gameName, teamName: this.teamName})
+      bus.$emit('sendShowEventCard', {gameName: this.gameName, teamName: this.teamName})
     }
   }
 }

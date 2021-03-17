@@ -83,7 +83,7 @@
                 <input type="text" id="add-column">
               </td>
               <td>
-                <ColumnColours :column=null :id="'add-column-colour'" />
+                <ColumnColours :column="null" :id="'add-column-colour'" />
               </td>
               <td colspan="3">
                 <i class="fas fa-save" @click="addColumn()" />
@@ -107,15 +107,14 @@
 </template>
 
 <script>
+import bus from '../../socket.js'
+
 import ColumnColours from './gameParams/ColumnColours.vue'
 
 export default {
   components: {
     ColumnColours
   },
-  props: [
-    'socket'
-  ],
   data() {
     return {
       showGameParams: false
@@ -156,41 +155,41 @@ export default {
     },
     toggleSplitColumns() {
       const splitColumns = document.getElementById('split-columns').checked
-      this.socket.emit('updateSplitColumns', {gameName: this.gameName, splitColumns: splitColumns})
+      bus.$emit('sendUpdateSplitColumns', {gameName: this.gameName, splitColumns: splitColumns})
     },
     toggleWipLimits() {
       const wipLimits = document.getElementById('wip-limits').checked
-      this.socket.emit('updateWipLimits', {gameName: this.gameName, wipLimits: wipLimits})
+      bus.$emit('sendUpdateWipLimits', {gameName: this.gameName, wipLimits: wipLimits})
     },
     toggleWipLimitType(wipLimitType) {
-      this.socket.emit('updateWipLimitType', {gameName: this.gameName, wipLimitType: wipLimitType})
+      bus.$emit('sendUpdateWipLimitType', {gameName: this.gameName, wipLimitType: wipLimitType})
     },
     toggleStealth() {
       const isStealth = document.getElementById('isStealth').checked
       localStorage.setItem('stealth', isStealth)
-      this.socket.emit('updateStealth', {gameName: this.gameName, stealth: isStealth})
+      bus.$emit('sendUpdateStealth', {gameName: this.gameName, stealth: isStealth})
     },
     toggleIncludeColumn(column) {
       const include = document.getElementById('include-column-' + column.name).checked
-      this.socket.emit('updateIncludeColumn', {gameName: this.gameName, column: column, include: include})
+      bus.$emit('sendUpdateIncludeColumn', {gameName: this.gameName, column: column, include: include})
     },
     moveColumnUp(column) {
-      this.socket.emit('moveColumnUp', {gameName: this.gameName, column: column})
+      bus.$emit('sendMoveColumnUp', {gameName: this.gameName, column: column})
     },
     moveColumnDown(column) {
-      this.socket.emit('moveColumnDown', {gameName: this.gameName, column: column})
+      bus.$emit('sendMoveColumnDown', {gameName: this.gameName, column: column})
     },
     deleteColumn(column) {
-      this.socket.emit('deleteColumn', {gameName: this.gameName, column: column})
+      bus.$emit('sendDeleteColumn', {gameName: this.gameName, column: column})
     },
     addColumn() {
       const column = document.getElementById('add-column').value
       const colour = document.getElementById('add-column-colour').value
-      this.socket.emit('addColumn', {gameName: this.gameName, column: column, colour: colour})
+      bus.$emit('sendAddColumn', {gameName: this.gameName, column: column, colour: colour})
     },
     toggleTeamActive(team) {
       const include = document.getElementById('team-active-' + team).checked
-      this.socket.emit('updateTeamActive', {gameName: this.gameName, teamName: team, include: include})
+      bus.$emit('updateTeamActive', {gameName: this.gameName, teamName: team, include: include})
     },
     otherCards(team) {
       return this.gameState.find(function(t) {
