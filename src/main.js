@@ -14,9 +14,3 @@ const app = new Vue({
   store,
   render: (h) => h(App),
 })
-
-if (window.Cypress) {
-  // only available during E2E tests
-  window.app = app
-  window.store = store
-}
