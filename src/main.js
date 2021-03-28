@@ -9,7 +9,7 @@ Vue.config.productionTip = false
 
 Vue.use(VModal)
 
-const app = new Vue({
+new Vue({
   el: '#app',
   store,
   render: (h) => h(App),
