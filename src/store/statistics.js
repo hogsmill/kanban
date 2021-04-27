@@ -11,10 +11,10 @@ module.exports = {
 
     if (debugOn) { console.log('updateStatistic', data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, gameRes) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, gameRes) {
       if (err) throw err
       if (gameRes) {
-        db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+        db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
           if (err) throw err
           if (res) {
             const cards = res.columns.find(function(c) {

@@ -130,7 +130,7 @@ function _getGames(db, io, data, debugOn) {
 
   if (debugOn) { console.log('getGames') }
 
-  db.collection('kanbanGames').find().toArray(function(err, res) {
+  db.gamesCollection.find().toArray(function(err, res) {
     if (err) throw err
     if (res.length) {
       delete res._id
@@ -142,7 +142,7 @@ function _getGames(db, io, data, debugOn) {
 function updateTeam(db, io, res) {
   const id = res._id
   delete res._id
-  db.collection('kanban').updateOne({'_id': id}, {$set: res}, function(err) {
+  db.gameCollection.updateOne({'_id': id}, {$set: res}, function(err) {
     if (err) throw err
     io.emit('loadTeam', res)
     gameState.update(db, io, res)
@@ -152,7 +152,7 @@ function updateTeam(db, io, res) {
 function updateGame(db, io, res) {
   const id = res._id
   delete res._id
-  db.collection('kanbanGames').updateOne({'_id': id}, {$set: res}, function(err) {
+  db.gamesCollection.updateOne({'_id': id}, {$set: res}, function(err) {
     if (err) throw err
     io.emit('loadGame', res)
   })
@@ -168,7 +168,7 @@ module.exports = {
 
     if (debugOn) { console.log('getGameDetails', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         const hosts = []
@@ -201,22 +201,22 @@ module.exports = {
 
     if (debugOn) { console.log('loadGame', data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
-        db.collection('kanbanGames').updateOne({'_id': res._id}, {$set: {lastaccess: new Date().toISOString()} }, function(err) {
+        db.gamesCollection.updateOne({'_id': res._id}, {$set: {lastaccess: new Date().toISOString()} }, function(err) {
           if (err) throw err
         })
         console.log('Loading game \'' + data.gameName + '\'')
         io.emit('loadGame', res)
         if (data.oldTeam) {
-          db.collection('kanban').findOne({gameName: data.gameName, teamName: data.oldTeam}, function(err, resOld) {
+          db.gameCollection.findOne({gameName: data.gameName, teamName: data.oldTeam}, function(err, resOld) {
             if (err) throw err
             resOld.members = teamFuns.removeMember(resOld.members, data.myName)
             updateTeam(db, io, resOld)
           })
         }
-        db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+        db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
           if (err) throw err
           if (res) {
             res.members = teamFuns.addMember(res.members, data.myName, data.myRole)
@@ -226,7 +226,7 @@ module.exports = {
       } else {
         console.log('Created new game \'' + data.gameName + '\'')
         const game = newGame(data)
-        db.collection('kanbanGames').insertOne(game, function(err) {
+        db.gamesCollection.insertOne(game, function(err) {
           if (err) throw err
           io.emit('loadGame', game)
           gameState.update(db, io, data)
@@ -237,7 +237,7 @@ module.exports = {
           if (teamName == data.teamName) {
             team.members = teamFuns.addMember(team.members, data.myName, data.myRole)
           }
-          db.collection('kanban').insertOne(team, function(err) {
+          db.gameCollection.insertOne(team, function(err) {
             if (err) throw err
             io.emit('loadTeam', team)
             gameState.update(db, io, data)
@@ -251,27 +251,27 @@ module.exports = {
 
     if (debugOn) { console.log('restartGame', data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
         const restarted = res.restarted
         restarted.push(new Date().toISOString())
         res.restarted = restarted
-        db.collection('kanbanGames').updateOne({'_id': res._id}, {$set: {restarted: restarted} }, function(err) {
+        db.gamesCollection.updateOne({'_id': res._id}, {$set: {restarted: restarted} }, function(err) {
           if (err) throw err
           io.emit('loadGame', res)
         })
       }
     })
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
           const game = resetGame(res[r])
           const id = game._id
           delete game._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: game}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: game}, function(err) {
             if (err) throw err
             io.emit('loadTeam', game)
             gameState.update(db, io, game)
@@ -285,10 +285,10 @@ module.exports = {
 
     if (debugOn) { console.log('deleteGameMeta', data) }
 
-    db.collection('kanbanGames').findOne({name: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({name: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
-        db.collection('kanbanGames').deleteOne({'_id': res._id}, function(err, ) {
+        db.gamesCollection.deleteOne({'_id': res._id}, function(err, ) {
           if (err) throw err
           _getGames(db, io, data, debugOn)
         })
@@ -300,11 +300,11 @@ module.exports = {
 
     if (debugOn) { console.log('deleteGame', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let i = 0; i < res.length; i++) {
-          db.collection('kanban').deleteOne({'_id': res[i]._id}, function(err, ) {
+          db.gameCollection.deleteOne({'_id': res[i]._id}, function(err, ) {
             if (err) throw err
           })
         }
@@ -316,7 +316,7 @@ module.exports = {
 
     if (debugOn) { console.log('updateCurrentDay', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         let updating = false
@@ -354,7 +354,7 @@ module.exports = {
         io.emit('loadTeam', res)
         gameState.update(db, io, res)
         if (updating) {
-          db.collection('kanban').updateOne({'_id': id}, {$set: res}, function() {
+          db.gameCollection.updateOne({'_id': id}, {$set: res}, function() {
             if (err) throw err
           })
         }
@@ -366,7 +366,7 @@ module.exports = {
 
     if (debugOn) { console.log('pullInCard', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         res.currentWorkCard = res.currentWorkCard + 1
@@ -374,7 +374,7 @@ module.exports = {
         res.columns[0].cards.push(card)
         updateTeam(db, io, res)
         if (card.dependentOn) {
-          db.collection('kanban').findOne({gameName: data.gameName, teamName: card.dependentOn.name}, function(err, depRes) {
+          db.gameCollection.findOne({gameName: data.gameName, teamName: card.dependentOn.name}, function(err, depRes) {
             if (err) throw err
             if (depRes) {
               card.team = data.teamName
@@ -391,7 +391,7 @@ module.exports = {
 
     if (debugOn) { console.log('setColumnWip', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         const columns = []
@@ -405,7 +405,7 @@ module.exports = {
         res.columns = columns
         const id = res._id
         delete res._id
-        db.collection('kanban').updateOne({'_id': id}, {$set: res}, function() {
+        db.gameCollection.updateOne({'_id': id}, {$set: res}, function() {
           if (err) throw err
           updateTeam(db, io, res)
           gameState.update(db, io, res)
@@ -418,7 +418,7 @@ module.exports = {
 
     if (debugOn) { console.log('updateEffort', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         res.members = teamFuns.decrementMyEffort(res.members, data.name, data.effort)
@@ -450,14 +450,14 @@ module.exports = {
 
     if (debugOn) { console.log('moveCardToNextColumn', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         const n = columnFuns.getColumnIndex(res.columns, data.column)
         cardFuns.moveCard(res.columns, data.workCard, n, res.currentDay)
         const id = res._id
         delete res._id
-        db.collection('kanban').updateOne({'_id': id}, {$set: res}, function() {
+        db.gameCollection.updateOne({'_id': id}, {$set: res}, function() {
           if (err) throw err
           updateTeam(db, io, res)
           gameState.update(db, io, res)
@@ -470,7 +470,7 @@ module.exports = {
 
     if (debugOn) { console.log('pairingDay', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         let i, player
@@ -528,7 +528,7 @@ module.exports = {
 
     if (debugOn) { console.log('addEffortToOthersCard', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.card.team}, function(err, otherRes) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.card.team}, function(err, otherRes) {
       if (err) throw err
       if (otherRes) {
         otherRes.columns = dependent.addDependentEffort(otherRes.columns, data.card, data.effort)
@@ -536,7 +536,7 @@ module.exports = {
       }
     })
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         res.otherCards = dependent.addOtherCardEffort(res.otherCards, data.card, data.effort)
@@ -550,7 +550,7 @@ module.exports = {
 
     if (debugOn) { console.log('startAutoDeploy', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         res.autoDeploy.doing = true
@@ -563,7 +563,7 @@ module.exports = {
 
     if (debugOn) { console.log('incrementAutoDeploy', data) }
 
-    db.collection('kanban').findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
+    db.gameCollection.findOne({gameName: data.gameName, teamName: data.teamName}, function(err, res) {
       if (err) throw err
       if (res) {
         const autoDeploy = res.autoDeploy
@@ -583,7 +583,7 @@ module.exports = {
 
     if (debugOn) { console.log('updateTeamActive', data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
         const teams = []
@@ -597,7 +597,7 @@ module.exports = {
         res.teams = teams
         const id = res._id
         delete res._id
-        db.collection('kanbanGames').updateOne({'_id': id}, {$set: res}, function(err) {
+        db.gamesCollection.updateOne({'_id': id}, {$set: res}, function(err) {
           if (err) throw err
           io.emit('loadGame', res)
           gameState.update(db, io, res)
@@ -610,13 +610,13 @@ module.exports = {
 
     if (debugOn) { console.log('updateGameInclude', data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
         res.include = data.include
         const id = res._id
         delete res._id
-        db.collection('kanbanGames').updateOne({'_id': id}, {$set: res}, function(err) {
+        db.gamesCollection.updateOne({'_id': id}, {$set: res}, function(err) {
           if (err) throw err
           io.emit('loadGame', res)
         })
@@ -628,7 +628,7 @@ module.exports = {
 
     if (debugOn) { console.log('setGameParamater', field, data) }
 
-    db.collection('kanbanGames').findOne({gameName: data.gameName}, function(err, res) {
+    db.gamesCollection.findOne({gameName: data.gameName}, function(err, res) {
       if (err) throw err
       if (res) {
         res[field] = data[field]
@@ -641,14 +641,14 @@ module.exports = {
 
     if (debugOn) { console.log('updateIncludeColumn', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
           res[r].columns = columnFuns.includeColumn(res[r].columns, data.colum.name, data.include)
           const id = res[r]._id
           delete res[r]._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
             io.emit('loadTeam', res[r])
           })
@@ -661,7 +661,7 @@ module.exports = {
 
     if (debugOn) { console.log('moveColumnUp', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
@@ -687,7 +687,7 @@ module.exports = {
           res[r].columns = columns
           const id = res[r]._id
           delete res[r]._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
             io.emit('loadTeam', res[r])
           })
@@ -700,7 +700,7 @@ module.exports = {
 
     if (debugOn) { console.log('moveColumnDown', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
@@ -726,7 +726,7 @@ module.exports = {
           res[r].columns = columns
           const id = res[r]._id
           delete res[r]._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
             io.emit('loadTeam', res[r])
           })
@@ -739,14 +739,14 @@ module.exports = {
 
     if (debugOn) { console.log('addColumn', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
           res[r].columns = columnFuns.addColumn(res[r].columns, data.column, data.colour)
           const id = res[r]._id
           delete res[r]._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
             io.emit('loadTeam', res[r])
           })
@@ -759,14 +759,14 @@ module.exports = {
 
     if (debugOn) { console.log('deleteColumn', data) }
 
-    db.collection('kanban').find({gameName: data.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: data.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         for (let r = 0; r < res.length; r++) {
           res[r].columns = columnFuns.deleteColumn(res[r].columns, data.column.name)
           const id = res[r]._id
           delete res[r]._id
-          db.collection('kanban').updateOne({'_id': id}, {$set: res[r]}, function(err) {
+          db.gameCollection.updateOne({'_id': id}, {$set: res[r]}, function(err) {
             if (err) throw err
             io.emit('loadTeam', res[r])
           })

@@ -54,7 +54,7 @@ module.exports = {
 
   update: function(db, io, game) {
 
-    db.collection('kanban').find({gameName: game.gameName}).toArray(function(err, res) {
+    db.gameCollection.find({gameName: game.gameName}).toArray(function(err, res) {
       if (err) throw err
       if (res.length) {
         const teams = []
