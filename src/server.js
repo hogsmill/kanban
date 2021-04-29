@@ -8,8 +8,8 @@ const prod = os.hostname() == 'agilesimulations' ? true : false
 
 const port = prod ? process.env.VUE_APP_PORT : 3007
 const logFile = prod ? process.argv[4] : 'server.log'
-const gameCollection =  prod ? process.env.VUE_APP_COLLECTION : 'noEstimates'
-const gamesCollection =  prod ? process.env.VUE_APP_GAME_COLLECTION : 'noEstimatesGames'
+const gameCollection =  prod ? process.env.VUE_APP_COLLECTION : 'kanbam'
+const gamesCollection =  prod ? process.env.VUE_APP_GAME_COLLECTION : 'kanbanGames'
 
 const currentAction = ''
 const currentData = ''

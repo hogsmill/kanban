@@ -192,9 +192,10 @@ export default {
       bus.$emit('updateTeamActive', {gameName: this.gameName, teamName: team, include: include})
     },
     otherCards(team) {
-      return this.gameState.find(function(t) {
+      const _team = this.gameState.find(function(t) {
         return t.name == team.name
-      }).otherCards.length > 0
+      })
+      return _team ? _team.otherCards.length > 0 : []
     }
   }
 }
