@@ -16,7 +16,6 @@ done
 REPO="https://github.com/hogsmill/kanban.git"
 APPS=(
   'kanban,kanbanGames,kanban,3014'
-  'kanban-new,kanbanNewGames,kanbanNew,3028,Kanban New,123456'
 )
 
 for ((i = 0; i < ${#APPS[@]}; i++))
